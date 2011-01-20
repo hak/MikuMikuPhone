@@ -53,6 +53,12 @@
 		4D55865312E19C5700CD805E /* PVRTVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D55864F12E19C5700CD805E /* PVRTVector.cpp */; };
 		4D55874112E2EED600CD805E /* ShaderPlain.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4D5585EA12E1900300CD805E /* ShaderPlain.fsh */; };
 		4D55874212E2EED600CD805E /* ShaderPlain.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4D5585EB12E1900300CD805E /* ShaderPlain.vsh */; };
+		4DF1755312E7AB7F003E4946 /* ShaderPlainTex.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 4DF1755112E7AB7F003E4946 /* ShaderPlainTex.fsh */; };
+		4DF1755412E7AB7F003E4946 /* ShaderPlainTex.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 4DF1755212E7AB7F003E4946 /* ShaderPlainTex.vsh */; };
+		4DF1755F12E7AB8D003E4946 /* ShaderPlainTex.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4DF1755112E7AB7F003E4946 /* ShaderPlainTex.fsh */; };
+		4DF1756012E7AB8D003E4946 /* ShaderPlainTex.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4DF1755212E7AB7F003E4946 /* ShaderPlainTex.vsh */; };
+		4DF1758112E7BE35003E4946 /* vmdReader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4DF1758012E7BE35003E4946 /* vmdReader.mm */; };
+		4DF1759D12E7D182003E4946 /* 恋VOCALOID.vmd in Resources */ = {isa = PBXBuildFile; fileRef = 4DF1759C12E7D182003E4946 /* 恋VOCALOID.vmd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -117,6 +123,11 @@
 		4D55864E12E19C5700CD805E /* PVRTMatrixF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRTMatrixF.cpp; sourceTree = "<group>"; };
 		4D55864F12E19C5700CD805E /* PVRTVector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRTVector.cpp; sourceTree = "<group>"; };
 		4D55865012E19C5700CD805E /* PVRTVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTVector.h; sourceTree = "<group>"; };
+		4DF1755112E7AB7F003E4946 /* ShaderPlainTex.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderPlainTex.fsh; path = Shaders/ShaderPlainTex.fsh; sourceTree = "<group>"; };
+		4DF1755212E7AB7F003E4946 /* ShaderPlainTex.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderPlainTex.vsh; path = Shaders/ShaderPlainTex.vsh; sourceTree = "<group>"; };
+		4DF1757F12E7BE35003E4946 /* vmdReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vmdReader.h; sourceTree = "<group>"; };
+		4DF1758012E7BE35003E4946 /* vmdReader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = vmdReader.mm; sourceTree = "<group>"; };
+		4DF1759C12E7D182003E4946 /* 恋VOCALOID.vmd */ = {isa = PBXFileReference; lastKnownFileType = file; path = "恋VOCALOID.vmd"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MikuMikuPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MikuMikuPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -153,6 +164,8 @@
 				1D3623250D0F684500981E51 /* MikuMikuPhoneAppDelegate.mm */,
 				4D55842712E1315000CD805E /* pmdReader.h */,
 				4D55842812E1315000CD805E /* pmdReader.mm */,
+				4DF1757F12E7BE35003E4946 /* vmdReader.h */,
+				4DF1758012E7BE35003E4946 /* vmdReader.mm */,
 				4D55854C12E17A1900CD805E /* pmdRenderer.h */,
 				4D55854D12E17A1900CD805E /* pmdRenderer.mm */,
 			);
@@ -172,6 +185,8 @@
 			children = (
 				4D5585EA12E1900300CD805E /* ShaderPlain.fsh */,
 				4D5585EB12E1900300CD805E /* ShaderPlain.vsh */,
+				4DF1755112E7AB7F003E4946 /* ShaderPlainTex.fsh */,
+				4DF1755212E7AB7F003E4946 /* ShaderPlainTex.vsh */,
 				2514C27910084DCA00A42282 /* Shader.fsh */,
 				2514C27A10084DCA00A42282 /* Shader.vsh */,
 			);
@@ -225,6 +240,7 @@
 		4D5583F712E1310D00CD805E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4DF1759C12E7D182003E4946 /* 恋VOCALOID.vmd */,
 				4D5583F812E1310D00CD805E /* eye2.bmp */,
 				4D5583F912E1310D00CD805E /* eye3.bmp */,
 				4D5583FA12E1310D00CD805E /* eye3Ne.bmp */,
@@ -321,6 +337,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DF1755F12E7AB8D003E4946 /* ShaderPlainTex.fsh in Resources */,
+				4DF1756012E7AB8D003E4946 /* ShaderPlainTex.vsh in Resources */,
 				2514C27B10084DCA00A42282 /* Shader.fsh in Resources */,
 				2514C27C10084DCA00A42282 /* Shader.vsh in Resources */,
 				4D55874112E2EED600CD805E /* ShaderPlain.fsh in Resources */,
@@ -349,6 +367,7 @@
 				4D55842312E1310D00CD805E /* 鏡音リン.pmd in Resources */,
 				4D55842412E1310D00CD805E /* 鏡音リン_act2.pmd in Resources */,
 				4D55842512E1310D00CD805E /* 鏡音レン.pmd in Resources */,
+				4DF1759D12E7D182003E4946 /* 恋VOCALOID.vmd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,6 +391,9 @@
 				4D55865212E19C5700CD805E /* PVRTMatrixF.cpp in Sources */,
 				4D55865312E19C5700CD805E /* PVRTVector.cpp in Sources */,
 				4D265FBC12E5FE9E000383EE /* Texture2D.m in Sources */,
+				4DF1755312E7AB7F003E4946 /* ShaderPlainTex.fsh in Sources */,
+				4DF1755412E7AB7F003E4946 /* ShaderPlainTex.vsh in Sources */,
+				4DF1758112E7BE35003E4946 /* vmdReader.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

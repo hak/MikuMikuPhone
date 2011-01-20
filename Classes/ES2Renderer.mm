@@ -56,9 +56,10 @@ enum {
 		
 		//		NSString* strFile = [[NSBundle mainBundle] pathForResource:@"初音ミク" ofType:@"pmd"];
 		NSString* strFile = [[NSBundle mainBundle] pathForResource:@"初音ミクVer2" ofType:@"pmd"];
-//		NSString* strFile = [[NSBundle mainBundle] pathForResource:@"カイト" ofType:@"pmd"];
-		//NSString* strFile = [[NSBundle mainBundle] pathForResource:@"鏡音リン" ofType:@"pmd"];
 		_reader.init( strFile );
+		
+		NSString* strMotionFile = [[NSBundle mainBundle] pathForResource:@"恋VOCALOID" ofType:@"vmd"];
+		_motionreader.init( strMotionFile );
 		
 		_pmdRenderer.init( &_reader );
 		

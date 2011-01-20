@@ -1,0 +1,90 @@
+//
+//  vmdReader.mm
+//  MikuMikuPhone
+//
+//  Created by hakuroum on 1/14/11.
+//  Copyright 2011 hakuroum@gmail.com . All rights reserved.
+//
+
+#import "vmdReader.h"
+
+#pragma mark Ctor
+vmdReader::vmdReader()
+{
+}
+
+#pragma mark Dtor
+vmdReader::~vmdReader()
+{
+	if( _data )
+	{
+		[_data release];
+	}
+}
+
+#pragma mark Init
+bool vmdReader::init( NSString* strFileName )
+{
+	_data = [[NSData dataWithContentsOfFile:strFileName options:NSDataReadingUncached error:nil] retain];
+	if( !_data )
+    {
+        NSLog(@"Failed to load data");
+        return FALSE;
+    }
+	
+    _pData = (int8_t*)[_data bytes];
+    if (!_pData)
+    {
+        NSLog(@"Failed to load data");
+        return FALSE;
+    }
+	_iOffset = 0;
+	
+	if( verifyHeader() == false )
+		return false;
+	
+	//Just ignore other stuff...
+	
+	return true;	
+}
+
+#pragma mark Parser
+int16_t vmdReader::getShort()
+{
+	int16_t i =  *(int16_t*)&_pData[ _iOffset ];
+	_iOffset += sizeof( int16_t );
+	return i;
+}
+
+int32_t vmdReader::getInteger()
+{
+	int32_t i =  *(int32_t*)&_pData[ _iOffset ];
+	_iOffset += sizeof( int32_t );
+	return i;
+}
+
+float vmdReader::getFloat()
+{
+	float f =  *(float*)&_pData[ _iOffset ];
+	_iOffset += sizeof( float );
+	return f;
+}
+
+bool vmdReader::verifyHeader()
+{
+	const char* VMD_MAGIC = "Vocaloid Motion Data 0002";
+	const int32_t VMD_MAGIC_SIZE = 30;
+	const int32_t VMD_MODELNAME_SIZE = 20;
+	
+	if( !_pData )
+		return false;
+
+	if( 0 != strcmp( (const char*)&_pData[ _iOffset ], VMD_MAGIC ) )
+		return false;
+		
+	_iOffset += VMD_MAGIC_SIZE;
+	_iOffset += VMD_MODELNAME_SIZE;
+	
+	return true;	
+}
+

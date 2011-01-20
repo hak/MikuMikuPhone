@@ -10,6 +10,7 @@
 #import <OpenGLES/ES2/gl.h>
 
 #import "pmdReader.h"
+#import "vmdReader.h"
 #import "PVRTVector.h"
 #import "Texture2D.h"
 
@@ -18,6 +19,7 @@ class pmdRenderer
 	pmdReader* _reader;
 
 	GLuint _program;
+	GLuint _programTex;
 	GLuint _uiMatrixLocation;
 	GLuint _uiMatrixWorld;
 	GLuint _uiMatrixWorldView;
@@ -38,7 +40,7 @@ class pmdRenderer
 	BOOL compileShader( GLuint *shader, const GLenum type, const NSString *file );
 	BOOL linkProgram( const GLuint prog );
 	BOOL validateProgram(const GLuint prog );
-	BOOL loadShaders();
+	BOOL loadShaders( GLuint*pProgram, NSString* strVsh, NSString* strFsh );
 
 public:
 	pmdRenderer();

@@ -32,8 +32,8 @@ void main()
 	mediump float specular = pow(NdotH, fPower);
 	
 	lowp vec4 colorSpecular = vec4( vMaterialSpecular.xyz * specular, 1 ) + vec4( vMaterialAmbient, 1 );
-    gl_FragColor = colorDiffuse + colorSpecular;
+    gl_FragColor = texture2D(sTexture, texCoord)* colorDiffuse + colorSpecular;
 #else	
-    gl_FragColor = colorDiffuse + colorSpecular;
+    gl_FragColor = texture2D(sTexture, texCoord)* colorDiffuse + colorSpecular;
 #endif
 }

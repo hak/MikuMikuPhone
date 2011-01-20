@@ -28,6 +28,7 @@
     GLuint program;
 	
 	pmdReader _reader;
+	vmdReader _motionreader;
 	pmdRenderer _pmdRenderer;
 	
 }

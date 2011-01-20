@@ -229,8 +229,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -276,16 +274,19 @@
 								<string>19C28FACFE9D520D11CA2CBB</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>4DF1747312E68E77003E4946</string>
+								<string>4DF1756312E7ABB4003E4946</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
+									<integer>28</integer>
+									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {278, 726}}</string>
+							<string>{{0, 364}, {278, 726}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -315,12 +316,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>MikuMikuPhone-Info.plist</string>
+								<string>vmdReader.mm</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -328,11 +331,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>MikuMikuPhone-Info.plist</string>
+										<string>vmdReader.mm</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>4DF1747612E68E77003E4946</string>
+										<string>4DF175B512E7D4EE003E4946</string>
 										<key>history</key>
 										<array>
 											<string>4D55845212E13AF100CD805E</string>
@@ -341,33 +344,44 @@
 											<string>4D55868D12E1A6BE00CD805E</string>
 											<string>4D5586A812E243D200CD805E</string>
 											<string>4D5586A912E243D200CD805E</string>
-											<string>4D5586AA12E243D200CD805E</string>
 											<string>4D55872012E2ED0700CD805E</string>
-											<string>4D55872112E2ED0700CD805E</string>
 											<string>4D55872312E2ED0700CD805E</string>
-											<string>4D55880212E2FA3600CD805E</string>
-											<string>4D55887812E37B2000CD805E</string>
-											<string>4D265C3612E43969000383EE</string>
 											<string>4D265CE012E56248000383EE</string>
-											<string>4D265D3812E56975000383EE</string>
 											<string>4D265E2E12E57B68000383EE</string>
 											<string>4D265F9C12E58F98000383EE</string>
 											<string>4D265F9D12E58F98000383EE</string>
 											<string>4D265F9E12E58F98000383EE</string>
 											<string>4D265F9F12E58F98000383EE</string>
 											<string>4D265FE312E601E8000383EE</string>
-											<string>4D265FE612E601E8000383EE</string>
 											<string>4D265FE712E601E8000383EE</string>
 											<string>4D265FFC12E602CB000383EE</string>
 											<string>4D26601412E60403000383EE</string>
 											<string>4D26601512E60403000383EE</string>
-											<string>4D26601812E60403000383EE</string>
-											<string>4D26603212E605A1000383EE</string>
-											<string>4D26603B12E605DA000383EE</string>
 											<string>4D26604F12E60708000383EE</string>
-											<string>4D26608812E68B9C000383EE</string>
-											<string>4DF1747412E68E77003E4946</string>
-											<string>4DF1747512E68E77003E4946</string>
+											<string>4DF174BF12E7940F003E4946</string>
+											<string>4DF174C012E7940F003E4946</string>
+											<string>4DF174C112E7940F003E4946</string>
+											<string>4DF174C212E7940F003E4946</string>
+											<string>4DF174C612E7940F003E4946</string>
+											<string>4DF1753712E7AA8E003E4946</string>
+											<string>4DF1756B12E7ABC8003E4946</string>
+											<string>4DF1756C12E7ABC8003E4946</string>
+											<string>4DF1758612E7D15B003E4946</string>
+											<string>4DF1758812E7D15B003E4946</string>
+											<string>4DF1758A12E7D15B003E4946</string>
+											<string>4DF1758C12E7D15B003E4946</string>
+											<string>4DF1758E12E7D15B003E4946</string>
+											<string>4DF1759012E7D15B003E4946</string>
+											<string>4DF1759112E7D15B003E4946</string>
+											<string>4DF1759312E7D15B003E4946</string>
+											<string>4DF1759412E7D15B003E4946</string>
+											<string>4DF1759512E7D15B003E4946</string>
+											<string>4DF1759712E7D15B003E4946</string>
+											<string>4DF1759812E7D15B003E4946</string>
+											<string>4DF175A212E7D1B5003E4946</string>
+											<string>4DF175A312E7D1B5003E4946</string>
+											<string>4DF175A412E7D1B5003E4946</string>
+											<string>4DF175A512E7D1B5003E4946</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -565,12 +579,14 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>4DF1748112E68E77003E4946</string>
+		<string>4DF175B412E7D4CA003E4946</string>
+		<string>1C530D57069F1CE1000CFCEE</string>
+		<string>4DF174CB12E7940F003E4946</string>
 		<string>4DF1748212E68E77003E4946</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>/Users/hakuroum/Documents/iPhoneDev/MikuMikuPhone/MikuMikuPhone.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 		<string>4D5583EC12E1291900CD805E</string>
+		<string>/Users/hakuroum/Documents/iPhoneDev/MikuMikuPhone/MikuMikuPhone.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>25 70 1412 785 0 0 1440 878 </string>
@@ -589,12 +605,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string></string>
+								<string>vmdReader.mm</string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -611,8 +629,6 @@
 							<string>433pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -789,7 +805,7 @@
 			<key>WindowToolGUID</key>
 			<string>1CD10A99069EF8BA00B06720</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>
@@ -812,7 +828,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string></string>
+										<string>pmdRenderer.mm</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -870,8 +886,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>4D55855D12E17A4F00CD805E</string>
-				<string>4D55855E12E17A4F00CD805E</string>
+				<string>4DF174B412E6938F003E4946</string>
+				<string>4DF174B512E6938F003E4946</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
@@ -899,6 +915,8 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -944,7 +962,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Identifier</key>
