@@ -26,12 +26,12 @@ varying lowp vec4 colorSpecular;
 void main()
 {
 #if USE_PHONG
-	mediump vec3 halfVector = -normalize(vLight0 + position);
+	mediump vec3 halfVector = normalize(-vLight0 + position);
 	mediump float NdotH = max(dot(normal, halfVector), 0.0);	
 	mediump float fPower = vMaterialSpecular.w;	
 	mediump float specular = pow(NdotH, fPower);
 	
-	lowp vec4 colorSpecular = vec4( vMaterialSpecular.xyz * specular, 1 ) + vec4( vMaterialAmbient, 1 );
+	lowp vec4 colorSpecular = vec4( vMaterialSpecular.xyz * specular, 1 );
     gl_FragColor = colorDiffuse + colorSpecular;
 #else	
     gl_FragColor = colorDiffuse + colorSpecular;

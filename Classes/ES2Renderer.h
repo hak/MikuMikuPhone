@@ -13,6 +13,9 @@
 
 #import "pmdRenderer.h"
 
+#define USE_MSAA (1)
+#define NUM_MSAASAMPLE (2)
+
 @interface ES2Renderer : NSObject <ESRenderer>
 {
 @private
@@ -24,7 +27,12 @@
 
     // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
     GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
-
+	
+#ifdef USE_MSAA
+	//Buffer definitions for the MSAA
+	GLuint msaaFramebuffer, msaaRenderBuffer, msaaDepthBuffer;
+#endif
+	
     GLuint program;
 	
 	pmdReader _reader;

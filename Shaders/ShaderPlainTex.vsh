@@ -11,6 +11,8 @@
 attribute highp vec3	myVertex;
 attribute highp vec3	myNormal;
 attribute mediump vec2	myUV;
+attribute mediump vec4	myBone;
+
 varying mediump vec2	texCoord;
 varying lowp	vec4	colorDiffuse;
 
@@ -21,9 +23,10 @@ varying mediump vec3 normal;
 varying lowp	vec4	colorSpecular;
 #endif
 
-uniform highp mat4		myMVPMatrix;
-uniform highp mat4		myWorldMatrix;
-uniform highp mat4		myWorldViewMatrix;
+//uniform highp mat4		uMVMatrix;
+uniform highp mat4		uPMatrix;
+uniform highp mat4		uMatrixPalette[116];
+
 uniform highp vec3		vLight0;
 
 uniform highp vec4		vMaterialDiffuse;
@@ -32,25 +35,33 @@ uniform highp vec4		vMaterialSpecular;
 
 void main(void)
 {
-	gl_Position = myMVPMatrix * vec4(myVertex,1);
+	highp vec4 p = vec4(myVertex,1);
+	highp mat4 m0 = uMatrixPalette[ int(myBone.x) ];
+	highp mat4 m1 = uMatrixPalette[ int(myBone.y) ];
+	vec4 b0 = m0 * p;
+	vec4 b1 = m1 * p;
+	vec4 v	= mix(b1, b0, myBone.w / 255.0);
+
+	gl_Position = uPMatrix * v;
+	gl_Position.z = -gl_Position.z;	
+
 	texCoord = myUV;
 
-	highp vec3 worldNormal = vec3(vec4(myNormal,0) * myWorldMatrix);
-	colorDiffuse = dot( worldNormal, -vLight0 ) * vMaterialDiffuse;
-	//colorDiffuse = vec4(0,0,0,1);
+	highp vec3 worldNormal = vec3(mat3(m0[0].xyz, m0[1].xyz, m0[2].xyz) * myNormal);
+
+	colorDiffuse = dot( worldNormal, -vLight0 ) * vMaterialDiffuse + vec4( vMaterialAmbient, 1 );
 	
-	highp vec3 ecPosition = vec3(myWorldMatrix*vec4(myVertex,1) );
+	highp vec3 ecPosition = v.xyz;
 	
 #if USE_PHONG
 	normal = worldNormal;
 	position = ecPosition;
 #else	
-	highp vec3 halfVector = -normalize(vLight0 + ecPosition);
+	highp vec3 halfVector = normalize(ecPosition - vLight0);
 	
-	highp float NdotH = max(dot(worldNormal, halfVector), 0.0);	
+	highp float NdotH = max(-dot(worldNormal, halfVector), 0.0);	
 	float fPower = vMaterialSpecular.w;	
-	highp float specular = pow(NdotH, fPower);
+	highp float specular = min( pow(NdotH, fPower), 1.0);
 	colorSpecular = vec4( vMaterialSpecular.xyz * specular, 1 ) + vec4( vMaterialAmbient, 1 );
-//	colorSpecular = vec4( 0,0,0, 1 );
 #endif
 }

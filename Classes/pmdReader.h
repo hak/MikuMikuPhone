@@ -12,7 +12,7 @@
 #pragma pack(1)
 
 //Should be 38 bytes in size
-struct vertex
+struct mmd_vertex
 {
 	float pos[3];
 	float normal_vec[3];
@@ -20,10 +20,27 @@ struct vertex
 	uint16_t bone_num[2];
 	uint8_t bone_weight;
 	uint8_t edge_flag;
+	
+	int16_t	getBoneIndex( const int32_t i )
+	{
+		switch( i )
+		{
+			case 0:
+				return bone_num[ 0 ];
+			case 1:
+				if( bone_weight < 100 )
+				{
+					return bone_num[ 1 ];
+				}
+				else -1;
+			default:
+				return -1;
+		}
+	}
 };
 
 //Should be 70 bytes in size
-struct material
+struct mmd_material
 {
 	float diffuse_color[3];
 	float alpha;
@@ -42,7 +59,7 @@ struct material
 	};
 };
 
-struct bone
+struct mmd_bone
 {
 	char bone_name[20];
 	uint16_t	parent_bone_index;		// 0xffff if none
@@ -52,7 +69,7 @@ struct bone
 	float bone_head_pos[3];
 };
 
-struct ik
+struct mmd_ik
 {
 	uint16_t ik_bone_index;
 	uint16_t ik_target_bone_index;
@@ -62,18 +79,18 @@ struct ik
 	uint16_t ik_child_bone_index[];
 };
 
-struct skin_vertex
+struct mmd_skin_vertex
 {
 	uint32_t	vert_index;
 	float		pos[3];
 };
 
-struct skin
+struct mmd_skin
 {
 	char		skin_name[20];
 	uint32_t	skin_vert_count;
 	uint8_t		skin_type;	// 0:base, 1:eyebrow 2:eye 3:lip 4:etc
-	skin_vertex skin_vert_data[];
+	mmd_skin_vertex skin_vert_data[];
 };
 #pragma pack()
 
@@ -84,22 +101,22 @@ class pmdReader
 	NSData* _data;
 	
 	int32_t _iNumVertices;
-	vertex* _pVertices;
+	mmd_vertex* _pVertices;
 
 	int32_t _iNumIndices;
 	uint16_t* _pIndices;
 
 	int32_t _iNumMaterials;
-	material* _pMaterials;
+	mmd_material* _pMaterials;
 	
 	int32_t _iNumBones;
-	bone* _pBones;
+	mmd_bone* _pBones;
 
 	int32_t _iNumIKs;
-	ik* _pIKs;
+	mmd_ik* _pIKs;
 	
 	int32_t _iNumSkins;
-	skin* _pSkins;
+	mmd_skin* _pSkins;
 	
 	int32_t getInteger();
 	int16_t getShort();
@@ -118,11 +135,17 @@ public:
 	bool init( NSString* strFileName );
 	
 	int32_t getNumVertices() { return _iNumVertices; }
-	vertex* getVertices() { return _pVertices; }
+	mmd_vertex* getVertices() { return _pVertices; }
 	
 	int32_t getNumIndices() { return _iNumIndices; }
 	uint16_t* getIndices() { return _pIndices; }
 
 	int32_t getNumMaterials() { return _iNumMaterials; }
-	material* getMaterials() { return _pMaterials; }
+	mmd_material* getMaterials() { return _pMaterials; }
+
+	int32_t getNumBones() { return _iNumBones; }
+	mmd_bone* getBones() { return _pBones; }
+
+	int32_t getNumIKs() { return _iNumIKs; }
+	mmd_ik* getIKs() { return _pIKs; }
 };

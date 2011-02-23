@@ -42,9 +42,16 @@ bool vmdReader::init( NSString* strFileName )
 	
 	if( verifyHeader() == false )
 		return false;
+	if( !parseMotions() )
+		return false;
+	if( !parseSkins() )
+		return false;
+	if( !parseCameras() )
+		return false;
+	if( !parseShadows() )
+		return false;
 	
 	//Just ignore other stuff...
-	
 	return true;	
 }
 
@@ -68,6 +75,76 @@ float vmdReader::getFloat()
 	float f =  *(float*)&_pData[ _iOffset ];
 	_iOffset += sizeof( float );
 	return f;
+}
+
+bool vmdReader::parseMotions()
+{
+	int32_t i = getInteger();
+	NSLog( @"Num Motions: %d", i );
+	_iNumMotions = i;
+	_pMotions = (vmd_motion*)&_pData[ _iOffset ];
+	_iOffset += i * sizeof( vmd_motion );
+	
+	if( _iOffset > [_data length] )
+		return false;
+	
+	return true;
+}
+
+bool vmdReader::parseSkins()
+{
+	int32_t i = getInteger();
+	NSLog( @"Num Skins: %d", i );
+	_iNumSkins = i;
+	_pSkins = (vmd_skin*)&_pData[ _iOffset ];
+	_iOffset += i * sizeof( vmd_skin );
+	
+	if( _iOffset > [_data length] )
+		return false;
+	
+	return true;
+}
+
+bool vmdReader::parseCameras()
+{
+	int32_t i = getInteger();
+	NSLog( @"Num Cameras: %d", i );
+	_iNumCameras = i;
+	_pCameras = (vmd_camera*)&_pData[ _iOffset ];
+	_iOffset += i * sizeof( vmd_camera );
+	
+	if( _iOffset > [_data length] )
+		return false;
+	
+	return true;
+}
+
+bool vmdReader::parseLights()
+{
+	int32_t i = getInteger();
+	NSLog( @"Num Lights: %d", i );
+	_iNumLights = i;
+	_pLights = (vmd_light*)&_pData[ _iOffset ];
+	_iOffset += i * sizeof( vmd_light );
+	
+	if( _iOffset > [_data length] )
+		return false;
+	
+	return true;
+}
+
+bool vmdReader::parseShadows()
+{
+	int32_t i = getInteger();
+	NSLog( @"Num Shadows: %d", i );
+	_iNumLights = i;
+	_pShadows = (vmd_self_shadow*)&_pData[ _iOffset ];
+	_iOffset += i * sizeof( vmd_self_shadow );
+	
+	if( _iOffset > [_data length] )
+		return false;
+	
+	return true;
 }
 
 bool vmdReader::verifyHeader()

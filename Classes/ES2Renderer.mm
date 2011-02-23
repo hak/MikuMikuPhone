@@ -6,6 +6,7 @@
 //  Copyright 2011 hakuroum@gmail.com . All rights reserved.
 //
 
+#include <sys/time.h>
 #import "ES2Renderer.h"
 
 // uniform index
@@ -21,6 +22,18 @@ enum {
     ATTRIB_COLOR,
     NUM_ATTRIBUTES
 };
+
+inline double micro()
+{
+	struct timeval tv;
+	double now;
+	gettimeofday( &tv, NULL );
+	now = tv.tv_usec;
+	now /= 1000000;
+	now += tv.tv_sec;
+	
+	return now;
+}
 
 @interface ES2Renderer (PrivateMethods)
 - (BOOL)loadShaders;
@@ -54,6 +67,22 @@ enum {
 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
 		
+		int32_t i;
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &i);
+		NSLog( @"GL_MAX_VERTEX_ATTRIBS:%d", i );
+		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &i);
+		NSLog( @"GL_MAX_VERTEX_UNIFORM_VECTORS:%d", i );
+		glGetIntegerv(GL_MAX_VARYING_VECTORS, &i);
+		NSLog( @"GL_MAX_VARYING_VECTORS:%d", i );
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &i);
+		NSLog( @"GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:%d", i );
+		glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &i);
+		NSLog( @"GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS:%d", i );
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &i);
+		NSLog( @"GL_MAX_TEXTURE_IMAGE_UNITS:%d", i );
+		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &i);
+		NSLog( @"GL_MAX_FRAGMENT_UNIFORM_VECTORS:%d", i );
+		
 		//		NSString* strFile = [[NSBundle mainBundle] pathForResource:@"初音ミク" ofType:@"pmd"];
 		NSString* strFile = [[NSBundle mainBundle] pathForResource:@"初音ミクVer2" ofType:@"pmd"];
 		_reader.init( strFile );
@@ -61,7 +90,8 @@ enum {
 		NSString* strMotionFile = [[NSBundle mainBundle] pathForResource:@"恋VOCALOID" ofType:@"vmd"];
 		_motionreader.init( strMotionFile );
 		
-		_pmdRenderer.init( &_reader );
+		_pmdRenderer.init( &_reader, &_motionreader );
+//		_pmdRenderer.init( &_reader, NULL );
 		
     }
 
@@ -92,9 +122,11 @@ enum {
     // This call is redundant, but needed if dealing with multiple contexts.
     [EAGLContext setCurrentContext:context];
 
-    // This application only creates a single default framebuffer which is already bound at this point.
-    // This call is redundant, but needed if dealing with multiple framebuffers.
-    glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
+#ifdef USE_MSAA
+	glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, msaaRenderBuffer);
+#endif
+
     glViewport(0, 0, backingWidth, backingHeight);
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -126,9 +158,27 @@ enum {
     // Draw
     //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+	_pmdRenderer.update(micro());
 	_pmdRenderer.render();
 
-	
+#ifdef USE_MSAA
+	//Discard buffer
+	GLenum attachments[] = {GL_DEPTH_ATTACHMENT};
+	glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE, 1, attachments);   
+    
+	//Bind both MSAA and View FrameBuffers.
+	glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, msaaFramebuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, defaultFramebuffer); 
+
+	// Call a resolve to combine both buffers
+	glResolveMultisampleFramebufferAPPLE();   
+#else
+	//Discard buffer
+	GLenum attachments[] = {GL_DEPTH_ATTACHMENT};
+	glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE, 1, attachments);   
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
+#endif	
     // This application only creates a single color renderbuffer which is already bound at this point.
     // This call is redundant, but needed if dealing with multiple renderbuffers.
     glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
@@ -296,14 +346,37 @@ enum {
     glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
     
 	[context renderbufferStorage:GL_RENDERBUFFER fromDrawable:layer];
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
+
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
     glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
 
+#ifdef USE_MSAA
+	if( msaaFramebuffer == 0 )
+	{
+		//Generate our MSAA Frame and Render buffers
+		glGenFramebuffers(1, &msaaFramebuffer);
+		glGenRenderbuffers(1, &msaaRenderBuffer);
+		
+		//Bind our MSAA buffers
+		glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, msaaRenderBuffer);
+		
+		// Generate the msaaDepthBuffer.
+		// 4 will be the number of pixels that the MSAA buffer will use in order to make one pixel on the render buffer.
+		glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, NUM_MSAASAMPLE, GL_RGB5_A1, backingWidth, backingHeight);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, msaaRenderBuffer);
+	}
+#endif
 	if( depthRenderbuffer == 0 )
 	{
 		glGenRenderbuffers(1, &depthRenderbuffer);
 		glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+#ifdef USE_MSAA
+		//Bind the msaa depth buffer.
+		glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, NUM_MSAASAMPLE, GL_DEPTH_COMPONENT16, backingWidth , backingHeight);
+#else
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, backingWidth, backingHeight);
+#endif
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
 	}
 		

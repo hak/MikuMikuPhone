@@ -96,13 +96,22 @@ bool pmdReader::parseVertices()
 	int32_t iVertices = getInteger();
 	NSLog( @"Num vertices: %d", iVertices );
 	_iNumVertices = iVertices;
-	_pVertices = (vertex*)&_pData[ _iOffset ];
-	_iOffset += iVertices * sizeof( vertex );
+	_pVertices = (mmd_vertex*)&_pData[ _iOffset ];
+	_iOffset += iVertices * sizeof( mmd_vertex );
 	
 	//Reverse Z
 	for( int32_t i = 0; i < iVertices; ++i )
 	{
-		_pVertices[ i ].pos[ 2 ] = -_pVertices[ i ].pos[ 2 ];
+		//_pVertices[ i ].pos[ 2 ] = -_pVertices[ i ].pos[ 2 ];
+		
+		if (_pVertices[ i ].bone_weight < 50)
+		{
+			uint16_t tmp = _pVertices[ i ].bone_num[0];
+			_pVertices[ i ].bone_num[0] = _pVertices[ i ].bone_num[1];
+			_pVertices[ i ].bone_num[1] = tmp;
+			_pVertices[ i ].bone_weight = (uint8_t) (100 - _pVertices[ i ].bone_weight);
+		}
+		
 	}
 	
 	if( _iOffset > [_data length] )
@@ -130,8 +139,8 @@ bool pmdReader::parseMaterials()
 	int32_t i = getInteger();
 	NSLog( @"Num Materials: %d", i );
 	_iNumMaterials = i;
-	_pMaterials = (material*)&_pData[ _iOffset ];
-	_iOffset += i * sizeof( material );
+	_pMaterials = (mmd_material*)&_pData[ _iOffset ];
+	_iOffset += i * sizeof( mmd_material );
 	
 	if( _iOffset > [_data length] )
 		return false;
@@ -161,8 +170,8 @@ bool pmdReader::parseBones()
 	int32_t i = getShort();
 	NSLog( @"Num Bones: %d", i );
 	_iNumBones = i;
-	_pBones = (bone*)&_pData[ _iOffset ];
-	_iOffset += i * sizeof( bone );
+	_pBones = (mmd_bone*)&_pData[ _iOffset ];
+	_iOffset += i * sizeof( mmd_bone );
 	
 	if( _iOffset > [_data length] )
 		return false;
@@ -175,14 +184,14 @@ bool pmdReader::parseIKs()
 	int32_t iNumIK = getShort();
 	NSLog( @"Num IKs: %d", iNumIK );
 	_iNumIKs = iNumIK;
-	_pIKs = (ik*)&_pData[ _iOffset ];
+	_pIKs = (mmd_ik*)&_pData[ _iOffset ];
 	
 	for( int32_t i = 0; i < iNumIK; ++i )
 	{
-		ik* currentIK = (ik*)&_pData[ _iOffset ];
+		mmd_ik* currentIK = (mmd_ik*)&_pData[ _iOffset ];
 		int32_t iChains = currentIK->ik_chain_length;
-		NSLog( @"Chans %d, %d", i, iChains );
-		_iOffset += sizeof( ik ) + iChains * sizeof( uint16_t );
+		NSLog( @"Chains %d, %d", i, iChains );
+		_iOffset += sizeof( mmd_ik ) + iChains * sizeof( uint16_t );
 	}
 
 	if( _iOffset > [_data length] )
@@ -196,14 +205,14 @@ bool pmdReader::parseSkins()
 	int32_t iNumSkins = getShort();
 	NSLog( @"Num Skins: %d", iNumSkins );
 	_iNumSkins = iNumSkins;
-	_pSkins = (skin*)&_pData[ _iOffset ];
+	_pSkins = (mmd_skin*)&_pData[ _iOffset ];
 	
 	for( int32_t i = 0; i < iNumSkins; ++i )
 	{
-		skin* currentSkin = (skin*)&_pData[ _iOffset ];
+		mmd_skin* currentSkin = (mmd_skin*)&_pData[ _iOffset ];
 		int32_t iVertices = currentSkin->skin_vert_count;
 		NSLog( @"Skin %d, %d", i, iVertices );
-		_iOffset += sizeof( skin ) + iVertices * sizeof( skin_vertex );
+		_iOffset += sizeof( mmd_skin ) + iVertices * sizeof( mmd_skin_vertex );
 	}
 	
 	if( _iOffset > [_data length] )
@@ -231,7 +240,12 @@ bool pmdReader::verifyHeader()
 	if( fVersion != PMD_VERSION )
 		return false;
 	
+	NSData* strModelName = [NSString stringWithCString:(const char*)&_pData[ _iOffset ] encoding:NSShiftJISStringEncoding];
+	NSLog( @"ModelName:%@", strModelName );
 	_iOffset += PMD_MODELNAME_SIZE;
+
+	NSData* strComment = [NSString stringWithCString:(const char*)&_pData[ _iOffset] encoding:NSShiftJISStringEncoding];
+	NSLog( @"Comment:%@", strComment );
 	_iOffset += PMD_COMMENT_SIZE;
 	
 	return true;	
