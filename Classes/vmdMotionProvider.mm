@@ -18,9 +18,7 @@ vmdMotionProvider::vmdMotionProvider(): _uiMaxFrame( 0 )
 #pragma mark Dtor
 vmdMotionProvider::~vmdMotionProvider()
 {
-	[_dicBones release];
-	_vecBones.clear();
-	_vecBonesWork.clear();
+	unbind();
 }
 
 //
@@ -486,3 +484,18 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 	_iNumBones = _reader->getNumBones();
 	return true;
 }
+
+bool vmdMotionProvider::unbind()
+{
+	_vecBones.clear();
+	_vecBonesWork.clear();
+	_pBones = NULL;
+	_iNumBones = 0;
+	_fCurrentFrame = -1.f;
+	
+	_reader = NULL;
+	
+	return true;
+}
+
+

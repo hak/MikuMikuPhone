@@ -93,6 +93,7 @@ public:
 	vmdReader();
 	~vmdReader();
 	bool init( NSString* strFileName );
+	bool unload();
 	
 	int32_t getNumMotions() { return _iNumMotions; }
 	vmd_motion* getMotions() { return _pMotions; }

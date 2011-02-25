@@ -133,6 +133,7 @@ public:
 	pmdReader();
 	~pmdReader();
 	bool init( NSString* strFileName );
+	bool unload();
 	
 	int32_t getNumVertices() { return _iNumVertices; }
 	mmd_vertex* getVertices() { return _pVertices; }

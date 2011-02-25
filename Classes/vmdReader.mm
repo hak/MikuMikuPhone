@@ -16,10 +16,7 @@ vmdReader::vmdReader()
 #pragma mark Dtor
 vmdReader::~vmdReader()
 {
-	if( _data )
-	{
-		[_data release];
-	}
+	unload();
 }
 
 #pragma mark Init
@@ -53,6 +50,16 @@ bool vmdReader::init( NSString* strFileName )
 	
 	//Just ignore other stuff...
 	return true;	
+}
+
+bool vmdReader::unload()
+{
+	if( _data )
+	{
+		[_data release];
+		_data = nil;
+	}
+	return 0;
 }
 
 #pragma mark Parser

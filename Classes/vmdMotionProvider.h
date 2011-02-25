@@ -72,6 +72,8 @@ public:
 	~vmdMotionProvider();
 	
 	bool bind( pmdReader* reader, vmdReader* motion );
+	bool unbind();
+	
 	bool update( const double dTime );
 	std::vector<bone_stats>* getMatrixPalette() { return &_vecBonesWork; }
 	

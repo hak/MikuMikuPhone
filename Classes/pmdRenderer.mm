@@ -27,19 +27,36 @@ pmdRenderer::pmdRenderer()
 #pragma mark Dtor
 pmdRenderer::~pmdRenderer()
 {
-	if (_vboRender)
-		glDeleteBuffers(1, &_vboRender);
-	if (_vboIndex)
-		glDeleteBuffers(1, &_vboIndex);
+	unload();
 	
 	for( int32_t i = 0; i < sizeof( _shaders ) / sizeof( _shaders[ 0 ] ); ++i)
 	{
 		if (_shaders[ i ]._program)
+		{
 			glDeleteProgram(_shaders[ i ]._program);
+		}
+	}
+}
+
+bool pmdRenderer::unload()
+{
+	if (_vboRender)
+	{
+		glDeleteBuffers(1, &_vboRender);
+		_vboRender = NULL;
+	}
+
+	if (_vboIndex)
+	{
+		glDeleteBuffers(1, &_vboIndex);
+		_vboIndex = NULL;
 	}
 	
 	delete _motionProvider;
+	_motionProvider = NULL;
 	_vecDrawList.clear();
+	_reader = NULL;
+	return true;
 }
 
 #pragma mark Update
@@ -54,6 +71,9 @@ void pmdRenderer::update( const double dTime )
 #pragma mark Render
 void pmdRenderer::render()
 {
+	if( _reader == NULL )
+		return;
+	
     // Bind the VBO
     glBindBuffer(GL_ARRAY_BUFFER, _vboRender);
 	
@@ -194,23 +214,25 @@ bool pmdRenderer::init( pmdReader* reader, vmdReader* motion )
 		createIndexBuffer();
 	}
 	
-	loadShaders(&_shaders[ 0 ], @"ShaderPlain", @"ShaderPlain" );
+	if( _shaders[ 0 ]._program == 0 )
+	{
+		loadShaders(&_shaders[ 0 ], @"ShaderPlain", @"ShaderPlain" );
 #if defined(DEBUG)
-    if (!validateProgram(_shaders[ 0 ]._program))
-    {
-        NSLog(@"Failed to validate program: %d", _shaders[ 0 ]._program);
-        return false;
-    }
+		if (!validateProgram(_shaders[ 0 ]._program))
+		{
+			NSLog(@"Failed to validate program: %d", _shaders[ 0 ]._program);
+			return false;
+		}
 #endif
-	
-	loadShaders(&_shaders[ 1 ], @"ShaderPlainTex", @"ShaderPlainTex" );
+		loadShaders(&_shaders[ 1 ], @"ShaderPlainTex", @"ShaderPlainTex" );
 #if defined(DEBUG)
-    if (!validateProgram(_shaders[ 1 ]._program))
-    {
-        NSLog(@"Failed to validate program: %d", _shaders[ 1 ]._program);
-        return false;
-    }
+		if (!validateProgram(_shaders[ 1 ]._program))
+		{
+			NSLog(@"Failed to validate program: %d", _shaders[ 1 ]._program);
+			return false;
+		}
 #endif
+	}	
 	
 	//Init matrices
 	float fAspect = 320.f/480.f;

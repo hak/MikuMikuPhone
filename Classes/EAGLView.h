@@ -35,6 +35,8 @@
 @property (nonatomic, retain) id displayLink;
 @property (nonatomic, assign) NSTimer *animationTimer;
 
+@property (readonly, nonatomic, assign) id <ESRenderer> renderer;
+
 - (void)startAnimation;
 - (void)stopAnimation;
 - (void)drawView:(id)sender;

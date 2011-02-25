@@ -20,7 +20,7 @@
 
 @implementation EAGLView
 
-@synthesize animating, animationFrameInterval, displayLink, animationTimer;
+@synthesize animating, animationFrameInterval, displayLink, animationTimer, renderer;
 
 
 // You must implement this method

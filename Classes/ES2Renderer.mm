@@ -83,41 +83,39 @@ inline double micro()
 		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &i);
 		NSLog( @"GL_MAX_FRAGMENT_UNIFORM_VECTORS:%d", i );
 		
-		//		NSString* strFile = [[NSBundle mainBundle] pathForResource:@"初音ミク" ofType:@"pmd"];
-		NSString* strFile = [[NSBundle mainBundle] pathForResource:@"初音ミクVer2" ofType:@"pmd"];
-		_reader.init( strFile );
-		
-		NSString* strMotionFile = [[NSBundle mainBundle] pathForResource:@"恋VOCALOID" ofType:@"vmd"];
-		_motionreader.init( strMotionFile );
-		
-		_pmdRenderer.init( &_reader, &_motionreader );
-//		_pmdRenderer.init( &_reader, NULL );
-		
     }
 
     return self;
 }
 
+- (bool)load:(NSString*)strModel motion:(NSString*)strMotion
+{
+	if( strModel == nil )
+		return false;
+	
+	_pmdRenderer.unload();
+	_reader.unload();
+	_motionreader.unload();
+	
+	bool b = _reader.init( strModel );
+	if( b == false )
+		return b;
+	
+	if( strMotion == nil )
+	{
+		_pmdRenderer.init( &_reader, NULL );
+	}
+	else
+	{
+		_motionreader.init( strMotion );
+		_pmdRenderer.init( &_reader, &_motionreader );
+	}
+	
+	return true;
+}
+
 - (void)render
 {
-    // Replace the implementation of this method to do your own custom drawing
-
-    static const GLfloat squareVertices[] = {
-        -0.5f, -0.33f,
-         0.5f, -0.33f,
-        -0.5f,  0.33f,
-         0.5f,  0.33f,
-    };
-
-    static const GLubyte squareColors[] = {
-        255, 255,   0, 255,
-        0,   255, 255, 255,
-        0,     0,   0,   0,
-        255,   0, 255, 255,
-    };
-
-    static float transY = 0.0f;
-
     // This application only creates a single context which is already set current at this point.
     // This call is redundant, but needed if dealing with multiple contexts.
     [EAGLContext setCurrentContext:context];
@@ -132,32 +130,7 @@ inline double micro()
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Use shader program
-    glUseProgram(program);
-
-    // Update uniform value
-    glUniform1f(uniforms[UNIFORM_TRANSLATE], (GLfloat)transY);
-    transY += 0.075f;	
-
-    // Update attribute values
-    glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
-    glEnableVertexAttribArray(ATTRIB_VERTEX);
-    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, 1, 0, squareColors);
-    glEnableVertexAttribArray(ATTRIB_COLOR);
-
-    // Validate program before drawing. This is a good check, but only really necessary in a debug build.
-    // DEBUG macro must be defined in your debug configurations if that's not already the case.
-#if defined(DEBUG)
-    if (![self validateProgram:program])
-    {
-        NSLog(@"Failed to validate program: %d", program);
-        return;
-    }
-#endif
-
     // Draw
-    //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
 	_pmdRenderer.update(micro());
 	_pmdRenderer.render();
 

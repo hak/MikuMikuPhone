@@ -43,6 +43,7 @@
 
 - (void)render;
 - (BOOL)resizeFromLayer:(CAEAGLLayer *)layer;
+- (bool)load:(NSString*)strModel motion:(NSString*)strMotion;
 
 @end
 

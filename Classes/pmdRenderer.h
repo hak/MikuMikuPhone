@@ -84,6 +84,8 @@ public:
 	pmdRenderer();
 	~pmdRenderer();
 	bool init( pmdReader* reader, vmdReader* motion );
+	bool unload();
+	
 	void update( const double dTime );
 	void render();
 };

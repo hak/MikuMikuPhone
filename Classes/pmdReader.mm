@@ -16,18 +16,7 @@ pmdReader::pmdReader()
 #pragma mark Dtor
 pmdReader::~pmdReader()
 {
-	for( int32_t i = 0; i < _iNumMaterials; ++i )
-	{
-		if( _pMaterials[ i ]._tex2D )
-		{
-			[_pMaterials[ i ]._tex2D release];
-		}
-	}
-
-	if( _data )
-	{
-		[_data release];
-	}
+	unload();
 }
 
 #pragma mark Init
@@ -67,6 +56,25 @@ bool pmdReader::init( NSString* strFileName )
 	//Just ignore other stuff...
 	
 	return true;	
+}
+
+bool pmdReader::unload()
+{
+	for( int32_t i = 0; i < _iNumMaterials; ++i )
+	{
+		if( _pMaterials[ i ]._tex2D )
+		{
+			[_pMaterials[ i ]._tex2D release];
+			_pMaterials[ i ]._tex2D = nil;
+		}
+	}
+	
+	if( _data )
+	{
+		[_data release];
+		_data = nil;
+	}
+	return true;
 }
 
 #pragma mark Parser
