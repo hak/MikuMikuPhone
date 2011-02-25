@@ -292,6 +292,13 @@
 			sepNavWindowFrame = "{{19, 4}, {1421, 869}}";
 		};
 	};
+	32CA4F630368D1EE00C91783 /* MikuMikuPhone_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 468}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 324}";
+		};
+	};
 	4D0CDE57130264CB00DEEA61 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 4DF1769E12E80E2C003E4946 /* NSValue.h */;
@@ -343,7 +350,7 @@
 		ignoreCount = 0;
 		lineNumber = 551;
 		location = MikuMikuPhone;
-		modificationTime = 320303925.828286;
+		modificationTime = 320305943.422948;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 	};
@@ -361,7 +368,7 @@
 		ignoreCount = 0;
 		lineNumber = 54;
 		location = MikuMikuPhone;
-		modificationTime = 320303925.899657;
+		modificationTime = 320305943.561577;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 	};
@@ -389,7 +396,7 @@
 		ignoreCount = 0;
 		lineNumber = 283;
 		location = MikuMikuPhone;
-		modificationTime = 320303925.941852;
+		modificationTime = 320305943.610514;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 	};
@@ -469,16 +476,16 @@
 	};
 	4D265FBA12E5FE9E000383EE /* Texture2D.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1482, 1573}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1482, 1547}}";
 			sepNavSelRange = "{3664, 4}";
-			sepNavVisRange = "{3129, 999}";
+			sepNavVisRange = "{2845, 1279}";
 		};
 	};
 	4D265FBB12E5FE9E000383EE /* Texture2D.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1251, 4173}}";
-			sepNavSelRange = "{4316, 0}";
-			sepNavVisRange = "{3797, 705}";
+			sepNavIntBoundsRect = "{{0, 0}, {1251, 4277}}";
+			sepNavSelRange = "{4215, 0}";
+			sepNavVisRange = "{0, 1932}";
 		};
 	};
 	4D265FFC12E602CB000383EE /* PBXTextBookmark */ = {
@@ -614,17 +621,17 @@
 	};
 	4D55854C12E17A1900CD805E /* pmdRenderer.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1362, 1391}}";
-			sepNavSelRange = "{597, 0}";
-			sepNavVisRange = "{207, 911}";
+			sepNavIntBoundsRect = "{{0, 0}, {1362, 1417}}";
+			sepNavSelRange = "{615, 16}";
+			sepNavVisRange = "{0, 944}";
 			sepNavWindowFrame = "{{19, 4}, {1421, 869}}";
 		};
 	};
 	4D55854D12E17A1900CD805E /* pmdRenderer.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1333, 12987}}";
-			sepNavSelRange = "{22365, 0}";
-			sepNavVisRange = "{5376, 840}";
+			sepNavIntBoundsRect = "{{0, 0}, {1333, 13208}}";
+			sepNavSelRange = "{1107, 0}";
+			sepNavVisRange = "{887, 835}";
 			sepNavWindowFrame = "{{19, 4}, {1421, 869}}";
 		};
 	};
@@ -914,16 +921,16 @@
 	};
 	4D9D026313150477006D8626 /* PickerViewController.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1333, 301}}";
-			sepNavSelRange = "{264, 12}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 468}}";
+			sepNavSelRange = "{295, 8}";
 			sepNavVisRange = "{0, 368}";
 		};
 	};
 	4D9D026413150477006D8626 /* PickerViewController.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1146, 1287}}";
-			sepNavSelRange = "{894, 0}";
-			sepNavVisRange = "{584, 971}";
+			sepNavIntBoundsRect = "{{0, 0}, {1146, 1326}}";
+			sepNavSelRange = "{915, 47}";
+			sepNavVisRange = "{600, 954}";
 		};
 	};
 	4D9D026B13150492006D8626 /* PBXTextBookmark */ = {
@@ -1208,7 +1215,7 @@
 		fRef = 1D3623250D0F684500981E51 /* MikuMikuPhoneAppDelegate.mm */;
 		name = "MikuMikuPhoneAppDelegate.mm: 168";
 		rLen = 0;
-		rLoc = 4579;
+		rLoc = 4578;
 		rType = 0;
 		vrLen = 744;
 		vrLoc = 3727;
@@ -1218,7 +1225,7 @@
 		fRef = 1D3623250D0F684500981E51 /* MikuMikuPhoneAppDelegate.mm */;
 		name = "MikuMikuPhoneAppDelegate.mm: 169";
 		rLen = 0;
-		rLoc = 4579;
+		rLoc = 4578;
 		rType = 0;
 		vrLen = 740;
 		vrLoc = 3758;
@@ -1274,7 +1281,7 @@
 		fRef = 1D3623250D0F684500981E51 /* MikuMikuPhoneAppDelegate.mm */;
 		name = "MikuMikuPhoneAppDelegate.mm: 80";
 		rLen = 0;
-		rLoc = 2040;
+		rLoc = 2150;
 		rType = 0;
 		vrLen = 849;
 		vrLoc = 1270;
@@ -1670,9 +1677,9 @@
 	};
 	4DF1777D12EA9079003E4946 /* SGXSkininngEvaluator.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1362, 718}}";
-			sepNavSelRange = "{265, 0}";
-			sepNavVisRange = "{0, 1020}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 494}}";
+			sepNavSelRange = "{128, 0}";
+			sepNavVisRange = "{0, 1017}";
 			sepNavWindowFrame = "{{19, 4}, {1421, 869}}";
 		};
 	};
@@ -1680,7 +1687,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1051, 1560}}";
 			sepNavSelRange = "{525, 7}";
-			sepNavVisRange = "{2014, 694}";
+			sepNavVisRange = "{2014, 692}";
 		};
 	};
 	4DF1778F12EAAD29003E4946 /* NSArray.h */ = {
@@ -1704,7 +1711,7 @@
 		ignoreCount = 0;
 		lineNumber = 363;
 		location = MikuMikuPhone;
-		modificationTime = 320303925.786029;
+		modificationTime = 320305943.346903;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 	};

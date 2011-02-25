@@ -19,29 +19,18 @@
 @synthesize modelFiles = _modelFiles;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions   
-{		
-    [glView startAnimation];
-	return YES;
-}
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-    [glView stopAnimation];
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
 {
 	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString* doc = [paths objectAtIndex:0];
 	NSFileManager* fm = [NSFileManager defaultManager];
-
+	
 	NSArray* files = [fm contentsOfDirectoryAtPath:doc error:nil];
 	
 	if( _motionFiles == nil )
 		_motionFiles = [[NSMutableArray alloc] init];
 	if( _modelFiles == nil )
 		_modelFiles = [[NSMutableArray alloc] init];
-
+	
 	[_modelFiles removeAllObjects];
 	[_motionFiles removeAllObjects];
 	
@@ -79,11 +68,21 @@
 			break;
 		}
 	}
-
+	
 	[self picked:_iCurrentSelection[ _iPickerMode ]];
 	//	[glView.renderer load:strFile motion:strMotionFile];
-	
 
+    [glView startAnimation];
+	return YES;
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+    [glView stopAnimation];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
     [glView startAnimation];
 }
 
