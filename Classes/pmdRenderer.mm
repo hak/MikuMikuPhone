@@ -52,10 +52,19 @@ bool pmdRenderer::unload()
 		_vboIndex = NULL;
 	}
 	
+	for( int32_t i = 0; i < _vecMaterials.size(); ++i )
+	{
+		if( _vecMaterials[ i ]._tex2D )
+		{
+			[_vecMaterials[ i ]._tex2D release];
+			_vecMaterials[ i ]._tex2D = nil;
+		}
+	}
+	
 	delete _motionProvider;
 	_motionProvider = NULL;
 	_vecDrawList.clear();
-	_reader = NULL;
+	_vecMaterials.clear();
 	return true;
 }
 
@@ -70,10 +79,7 @@ void pmdRenderer::update( const double dTime )
 
 #pragma mark Render
 void pmdRenderer::render()
-{
-	if( _reader == NULL )
-		return;
-	
+{	
     // Bind the VBO
     glBindBuffer(GL_ARRAY_BUFFER, _vboRender);
 	
@@ -99,8 +105,6 @@ void pmdRenderer::render()
     // Feed Projection and Model View matrices to the shaders
     PVRTMat4 mVP = _mProjection * _mView;
 	
-	//int32_t iMaterials = _reader->getNumMaterials();
-	mmd_material* pMaterial = _reader->getMaterials();
 	int32_t iOffset = 0;
 	
 	GLuint lastProgram = -1;
@@ -120,20 +124,20 @@ void pmdRenderer::render()
 		int32_t i = itBegin->iMaterialIndex;
 		
 		//Set materials
-		if( pMaterial[ i ].alpha < 1.0f )
+		if( _vecMaterials[ i ].alpha < 1.0f )
 			glEnable(GL_BLEND);
 		else
 			glDisable(GL_BLEND);
 		
 		int32_t iShaderIndex = 0;
 		
-		if( pMaterial[ i ]._tex )
+		if( _vecMaterials[ i ]._tex )
 		{
 			iShaderIndex = 1;
 			glUseProgram(_shaders[iShaderIndex]._program);		
 			glEnable(GL_TEXTURE_2D);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, pMaterial[ i ]._tex);
+			glBindTexture(GL_TEXTURE_2D, _vecMaterials[ i ]._tex);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -152,16 +156,16 @@ void pmdRenderer::render()
 			currentProgram = _shaders[iShaderIndex]._program;
 		}
 		
-		glUniform4f( _shaders[iShaderIndex]._uiMaterialDiffuse, pMaterial[ i ].diffuse_color[ 0 ],
-					pMaterial[ i ].diffuse_color[ 1 ],
-					pMaterial[ i ].diffuse_color[ 2 ],
-					pMaterial[ i ].alpha );
-		glUniform4f( _shaders[iShaderIndex]._uiMaterialSpecular, pMaterial[ i ].specular_color[ 0 ],
-					pMaterial[ i ].specular_color[ 1 ],
-					pMaterial[ i ].specular_color[ 2 ],
-					pMaterial[ i ].intensity );
+		glUniform4f( _shaders[iShaderIndex]._uiMaterialDiffuse, _vecMaterials[ i ].diffuse_color[ 0 ],
+					_vecMaterials[ i ].diffuse_color[ 1 ],
+					_vecMaterials[ i ].diffuse_color[ 2 ],
+					_vecMaterials[ i ].alpha );
+		glUniform4f( _shaders[iShaderIndex]._uiMaterialSpecular, _vecMaterials[ i ].specular_color[ 0 ],
+					_vecMaterials[ i ].specular_color[ 1 ],
+					_vecMaterials[ i ].specular_color[ 2 ],
+					_vecMaterials[ i ].intensity );
 		
-		glUniform3fv( _shaders[iShaderIndex]._uiMaterialAmbient, 1, pMaterial[ i ].ambient_color );
+		glUniform3fv( _shaders[iShaderIndex]._uiMaterialAmbient, 1, _vecMaterials[ i ].ambient_color );
 		
 		//
 		//Set up matrix palette
@@ -200,8 +204,7 @@ bool pmdRenderer::init( pmdReader* reader, vmdReader* motion )
 {
 	if( reader == NULL )
 		return false;
-	_reader = reader;
-	
+
 	if( motion != NULL )
 	{
 		_motionProvider = new vmdMotionProvider();
@@ -210,10 +213,13 @@ bool pmdRenderer::init( pmdReader* reader, vmdReader* motion )
 	}
 	else
 	{
-		createVbo();
-		createIndexBuffer();
+		createVbo( reader );
+		createIndexBuffer( reader );
 	}
 	
+	//Load materials
+	loadMaterials( reader );
+
 	if( _shaders[ 0 ]._program == 0 )
 	{
 		loadShaders(&_shaders[ 0 ], @"ShaderPlain", @"ShaderPlain" );
@@ -250,7 +256,7 @@ bool pmdRenderer::init( pmdReader* reader, vmdReader* motion )
 	return true;	
 }
 
-void pmdRenderer::createVbo()
+void pmdRenderer::createVbo( pmdReader* pReader )
 {
     int32_t iStride = sizeof( renderer_vertex );
 	glGenBuffers(1, &_vboRender);
@@ -258,8 +264,8 @@ void pmdRenderer::createVbo()
 	// Bind the VBO
 	glBindBuffer(GL_ARRAY_BUFFER, _vboRender);
 	
-	int32_t iNum = _reader->getNumVertices();
-	mmd_vertex* pVertices = _reader->getVertices();
+	int32_t iNum = pReader->getNumVertices();
+	mmd_vertex* pVertices = pReader->getVertices();
 	std::vector< renderer_vertex > vec;
 	renderer_vertex vertex;
 	for( int32_t iVertexIndex = 0; iVertexIndex < iNum; ++iVertexIndex )
@@ -288,7 +294,7 @@ void pmdRenderer::createVbo()
 	return;
 }
 
-void pmdRenderer::createIndexBuffer()
+void pmdRenderer::createIndexBuffer( pmdReader* pReader )
 {
     int32_t iStride = sizeof( uint16_t );
 	glGenBuffers(1, &_vboIndex);
@@ -297,13 +303,13 @@ void pmdRenderer::createIndexBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vboIndex);
 	
 	// Set the buffer's data
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iStride * _reader->getNumIndices(), _reader->getIndices(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iStride * pReader->getNumIndices(), pReader->getIndices(), GL_STATIC_DRAW);
 	
 	// Unbind the VBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     
-	int32_t iMaterials = _reader->getNumMaterials();
-	mmd_material* pMaterial = _reader->getMaterials();
+	int32_t iMaterials = pReader->getNumMaterials();
+	mmd_material* pMaterial = pReader->getMaterials();
 
 	for( int32_t i = 0; i < iMaterials; ++i )
 	{
@@ -314,6 +320,37 @@ void pmdRenderer::createIndexBuffer()
 	}
 	return;
 }
+
+void pmdRenderer::loadMaterials( pmdReader* pReader )
+{	
+	for( int32_t i = 0; i < pReader->getNumMaterials(); ++i )
+	{
+		_vecMaterials.push_back( pReader->getMaterials()[ i ] );
+		
+		mmd_material& mat = _vecMaterials[ i ];
+		if( mat.texture_file_name[ 0 ] != 0 )
+		{
+			NSString* strFile = [NSString stringWithUTF8String: mat.texture_file_name];
+			
+			NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+			NSString* doc = [paths objectAtIndex:0];
+			
+			NSString* str = [NSString stringWithFormat:@"%@/%@", doc, strFile];
+			NSLog( @"Texture:%@", str);
+			
+			mat._tex2D = [[Texture2D alloc] initWithImage: [UIImage imageWithContentsOfFile:str]];
+			mat._tex = mat._tex2D.name;
+			
+		}
+		else
+		{
+			mat._tex2D = nil;
+			mat._tex = 0;
+		}
+	}
+	
+	
+}	
 
 #pragma mark partitioning
 bool pmdRenderer::partitioning( pmdReader* reader, SkinningEvaluator* eval, int32_t iStart, int32_t iNumIndices )

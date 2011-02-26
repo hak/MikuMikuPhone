@@ -94,8 +94,6 @@ inline double micro()
 		return false;
 	
 	_pmdRenderer.unload();
-	_reader.unload();
-	_motionreader.unload();
 	
 	bool b = _reader.init( strModel );
 	if( b == false )
@@ -111,6 +109,8 @@ inline double micro()
 		_pmdRenderer.init( &_reader, &_motionreader );
 	}
 	
+	_reader.unload();
+	_motionreader.unload();
 	return true;
 }
 

@@ -60,15 +60,6 @@ bool pmdReader::init( NSString* strFileName )
 
 bool pmdReader::unload()
 {
-	for( int32_t i = 0; i < _iNumMaterials; ++i )
-	{
-		if( _pMaterials[ i ]._tex2D )
-		{
-			[_pMaterials[ i ]._tex2D release];
-			_pMaterials[ i ]._tex2D = nil;
-		}
-	}
-	
 	if( _data )
 	{
 		[_data release];
@@ -153,29 +144,6 @@ bool pmdReader::parseMaterials()
 	if( _iOffset > [_data length] )
 		return false;
 	
-	for( int32_t i = 0; i < _iNumMaterials; ++i )
-	{
-		if( _pMaterials[ i ].texture_file_name[ 0 ] != 0 )
-		{
-			NSString* strFile = [NSString stringWithUTF8String: _pMaterials[ i ].texture_file_name];
-			
-			NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-			NSString* doc = [paths objectAtIndex:0];
-			
-			NSString* str = [NSString stringWithFormat:@"%@/%@", doc, strFile];
-			NSLog( @"Texture:%@", str);
-			
-			_pMaterials[ i ]._tex2D = [[Texture2D alloc] initWithImage: [UIImage imageWithContentsOfFile:str]];
-			_pMaterials[ i ]._tex = _pMaterials[ i ]._tex2D.name;
-			
-		}
-		else
-		{
-			_pMaterials[ i ]._tex2D = nil;
-			_pMaterials[ i ]._tex = 0;
-		}
-	}
-
 	return true;
 }
 

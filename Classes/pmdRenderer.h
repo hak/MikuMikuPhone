@@ -49,21 +49,22 @@ struct SHADER_PARAMS
 
 class pmdRenderer
 {
-	pmdReader* _reader;
 	vmdMotionProvider* _motionProvider;
 
 	SHADER_PARAMS _shaders[ 2 ];
 
 	PVRTMat4 _mProjection;
 	PVRTMat4 _mView;
-		
+
 	GLuint _vboRender;
 	GLuint _vboIndex;
 
 	std::vector< DRAW_LIST > _vecDrawList;
+	std::vector< mmd_material > _vecMaterials;
 	
-	void createVbo();
-	void createIndexBuffer();
+	void createVbo( pmdReader * pReader );
+	void createIndexBuffer( pmdReader* pReader );
+	void loadMaterials( pmdReader* pReader );
 
 	BOOL compileShader( GLuint *shader, const GLenum type, const NSString *file );
 	BOOL linkProgram( const GLuint prog );
