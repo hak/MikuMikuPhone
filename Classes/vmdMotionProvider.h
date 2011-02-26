@@ -21,6 +21,15 @@ enum JOINT_TYPE {
 	JOINT_TYPE_KNEE,
 };
 
+struct ik_item {
+	uint16_t ik_bone_index;
+	uint16_t ik_target_bone_index;
+	uint8_t ik_chain_length;
+	uint16_t iterations;
+	float control_weight;
+	std::vector<uint16_t> _vec_ik_child_bone_index;
+};
+
 struct motion_item {
 	uint32_t iFrame;
 	float fPos[ 3 ];
@@ -44,12 +53,10 @@ class vmdMotionProvider {
 	double _dStartTime;
 
 	uint32_t _uiMaxFrame;
-	std::vector<std::vector<motion_item>*> _vecBones;
-	std::vector<bone_stats> _vecBonesWork;
-	pmdReader* _reader;
-	
-	int32_t _iNumBones;
-	mmd_bone* _pBones;
+	std::vector<std::vector<motion_item>*> _vecMotions;
+	std::vector<bone_stats> _vecMotionsWork;	
+	std::vector<mmd_bone> _vecBones;
+	std::vector<ik_item> _vecIKs;
 	
 	bool checkBones( pmdReader* reader, vmdReader* motion );
 	void interpolateLinear(float fFrame, motion_item *M0, motion_item *pM1, motion_item *pOut);
@@ -62,7 +69,7 @@ class vmdMotionProvider {
 	void updateBoneMatrix( const int32_t i );
 
 	void resolveIK();
-	void ccdIK( mmd_ik* pIk);
+	void ccdIK( ik_item* pIk);
 	void getCurrentPosition( PVRTVec3& vec, int32_t iIndex);
 	void clearUpdateFlags( int32_t iCurrentBone, int32_t iTargetBone );
 	void makeQuaternion(float* quat, float angle, PVRTVec3 axis );
@@ -75,6 +82,6 @@ public:
 	bool unbind();
 	
 	bool update( const double dTime );
-	std::vector<bone_stats>* getMatrixPalette() { return &_vecBonesWork; }
+	std::vector<bone_stats>* getMatrixPalette() { return &_vecMotionsWork; }
 	
 };

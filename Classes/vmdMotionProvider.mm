@@ -204,22 +204,22 @@ void vmdMotionProvider::quaternionToMatrixPreserveTranslate(float* mat, const fl
 
 void vmdMotionProvider::updateBoneMatrix( const int32_t i )
 {
-	if( _vecBonesWork[ i ].bUpdated == false )
+	if( _vecMotionsWork[ i ].bUpdated == false )
 	{
-		if (_pBones[ i ].parent_bone_index != 0xffff)
+		if (_vecBones[ i ].parent_bone_index != 0xffff)
 		{
-			int32_t p = _pBones[ i ].parent_bone_index;
+			int32_t p = _vecBones[ i ].parent_bone_index;
 			
 			//Update parent
 			updateBoneMatrix(p);
 			
-			_vecBonesWork[ i ].mat = _vecBonesWork[ p ].mat * _vecBonesWork[ i ].matCurrent;
+			_vecMotionsWork[ i ].mat = _vecMotionsWork[ p ].mat * _vecMotionsWork[ i ].matCurrent;
 		}
 		else
 		{
-			_vecBonesWork[ i ].mat = _vecBonesWork[ i ].matCurrent;
+			_vecMotionsWork[ i ].mat = _vecMotionsWork[ i ].matCurrent;
 		}
-		_vecBonesWork[ i ].bUpdated = true;
+		_vecMotionsWork[ i ].bUpdated = true;
 	}
 }
 
@@ -249,13 +249,14 @@ bool vmdMotionProvider::update( const double dTime )
 		_fCurrentFrame = dDelta * FRAME_PERSEC;
 	}
 
-	for( int32_t i = 0; i < _iNumBones; ++i )
+	int32_t iSize = _vecBones.size();
+	for( int32_t i = 0; i < iSize; ++i )
 	{
 		//
 		//1. get current motion
 		//
-		int32_t iMotionIndex = _vecBonesWork[ i ].iCurrentIndex;
-		std::vector<motion_item>& vec = *_vecBones[ i ];
+		int32_t iMotionIndex = _vecMotionsWork[ i ].iCurrentIndex;
+		std::vector<motion_item>& vec = *_vecMotions[ i ];
 		motion_item* pCurrentItem = &vec[iMotionIndex];
 		motion_item* pNextItem = &vec[iMotionIndex + 1];
 		
@@ -276,7 +277,7 @@ bool vmdMotionProvider::update( const double dTime )
 				break;
 			}
 		}
-		_vecBonesWork[ i ].iCurrentIndex = iMotionIndex;
+		_vecMotionsWork[ i ].iCurrentIndex = iMotionIndex;
 		
 		//
 		//2. Interpolation
@@ -287,27 +288,27 @@ bool vmdMotionProvider::update( const double dTime )
 		//
 		//3. Update
 		//
-		quaternionToMatrix(_vecBonesWork[ i ].matCurrent.f, m.fRotation);
+		quaternionToMatrix(_vecMotionsWork[ i ].matCurrent.f, m.fRotation);
 		
-		if (_pBones[ i ].parent_bone_index == 0xffff)
+		if (_vecBones[ i ].parent_bone_index == 0xffff)
 		{
-			_vecBonesWork[ i ].matCurrent.f[12] = m.fPos[0] + _pBones[ i ].bone_head_pos[0];
-			_vecBonesWork[ i ].matCurrent.f[13] = m.fPos[1] + _pBones[ i ].bone_head_pos[1];
-			_vecBonesWork[ i ].matCurrent.f[14] = m.fPos[2] + _pBones[ i ].bone_head_pos[2];
+			_vecMotionsWork[ i ].matCurrent.f[12] = m.fPos[0] + _vecBones[ i ].bone_head_pos[0];
+			_vecMotionsWork[ i ].matCurrent.f[13] = m.fPos[1] + _vecBones[ i ].bone_head_pos[1];
+			_vecMotionsWork[ i ].matCurrent.f[14] = m.fPos[2] + _vecBones[ i ].bone_head_pos[2];
 		}
 		else
 		{
-			mmd_bone* p = &_pBones[ _pBones[ i ].parent_bone_index ];
-			_vecBonesWork[ i ].matCurrent.f[12] = m.fPos[0] + _pBones[ i ].bone_head_pos[0] - p->bone_head_pos[ 0 ];
-			_vecBonesWork[ i ].matCurrent.f[13] = m.fPos[1] + _pBones[ i ].bone_head_pos[1] - p->bone_head_pos[ 1 ];
-			_vecBonesWork[ i ].matCurrent.f[14] = m.fPos[2] + _pBones[ i ].bone_head_pos[2] - p->bone_head_pos[ 2 ];			
+			mmd_bone* p = &_vecBones[ _vecBones[ i ].parent_bone_index ];
+			_vecMotionsWork[ i ].matCurrent.f[12] = m.fPos[0] + _vecBones[ i ].bone_head_pos[0] - p->bone_head_pos[ 0 ];
+			_vecMotionsWork[ i ].matCurrent.f[13] = m.fPos[1] + _vecBones[ i ].bone_head_pos[1] - p->bone_head_pos[ 1 ];
+			_vecMotionsWork[ i ].matCurrent.f[14] = m.fPos[2] + _vecBones[ i ].bone_head_pos[2] - p->bone_head_pos[ 2 ];			
 		}
 		
-		_vecBonesWork[ i ].bUpdated = false;
-		_vecBonesWork[ i ].fQuaternion[ 0 ] = m.fRotation[ 0 ];
-		_vecBonesWork[ i ].fQuaternion[ 1 ] = m.fRotation[ 1 ];
-		_vecBonesWork[ i ].fQuaternion[ 2 ] = m.fRotation[ 2 ];
-		_vecBonesWork[ i ].fQuaternion[ 3 ] = m.fRotation[ 3 ];
+		_vecMotionsWork[ i ].bUpdated = false;
+		_vecMotionsWork[ i ].fQuaternion[ 0 ] = m.fRotation[ 0 ];
+		_vecMotionsWork[ i ].fQuaternion[ 1 ] = m.fRotation[ 1 ];
+		_vecMotionsWork[ i ].fQuaternion[ 2 ] = m.fRotation[ 2 ];
+		_vecMotionsWork[ i ].fQuaternion[ 3 ] = m.fRotation[ 3 ];
 	}
 
 	//
@@ -318,7 +319,7 @@ bool vmdMotionProvider::update( const double dTime )
 	//
 	//5. Update chain
 	//
-	for( int32_t i = 0; i < _iNumBones; ++i )
+	for( int32_t i = 0; i < iSize; ++i )
 	{
 		updateBoneMatrix( i );
 	}
@@ -326,15 +327,15 @@ bool vmdMotionProvider::update( const double dTime )
 	//
 	//6. Back to position
 	//
-	for( int32_t i = 0; i < _iNumBones; ++i )
+	for( int32_t i = 0; i < iSize; ++i )
 	{
 		PVRTMat4 mat;
 		PVRTMatrixTranslationF( mat, 
-							   -_pBones[ i ].bone_head_pos[0],
-							   -_pBones[ i ].bone_head_pos[1],
-							   -_pBones[ i ].bone_head_pos[2] );
+							   -_vecBones[ i ].bone_head_pos[0],
+							   -_vecBones[ i ].bone_head_pos[1],
+							   -_vecBones[ i ].bone_head_pos[2] );
 
-		_vecBonesWork[ i ].mat = _vecBonesWork[ i ].mat * mat;
+		_vecMotionsWork[ i ].mat = _vecMotionsWork[ i ].mat * mat;
 	}
 		
 	return bReturn;
@@ -396,9 +397,9 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 		
 		std::vector<motion_item>* vec = new std::vector<motion_item>();
 		vec->push_back( defaultMotion );
-		_vecBones.push_back( vec );
+		_vecMotions.push_back( vec );
 		
-		_vecBonesWork.push_back( stats );
+		_vecMotionsWork.push_back( stats );
 	}
 
 	int32_t iNumFrameData = motion->getNumMotions();
@@ -426,7 +427,7 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 				for( int32_t j = 0; j < 16; ++j )
 					m.cInterpolation[ j ] = vmdMotion[ i ].Interpolation[ j ];
 				
-				_vecBones[ iIndex ]->push_back( m );
+				_vecMotions[ iIndex ]->push_back( m );
 				_uiMaxFrame = std::max( _uiMaxFrame, vmdMotion[ i ].FlameNo );
 			}
 			else
@@ -441,26 +442,26 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 	//
 	for( int32_t i = 0; i < iNumBones; ++i )
 	{
-		if( _vecBones[ i ]->size() == 1 )
+		if( _vecMotions[ i ]->size() == 1 )
 		{
 			//Need at least 2 entries
-			_vecBones[ i ]->push_back( defaultMotion );
+			_vecMotions[ i ]->push_back( defaultMotion );
 		}
 		
-		std::sort(_vecBones[ i ]->begin(), _vecBones[ i ]->end(), dataSortPredicate);
+		std::sort(_vecMotions[ i ]->begin(), _vecMotions[ i ]->end(), dataSortPredicate);
 	}
 	
 #if 0
 	int32_t iBone = 91;
-	for( int32_t i = 0; i < _vecBones[ iBone ]->size(); ++i )
-		NSLog( @"Motion %d, (%f,%f,%f), (%f,%f,%f,%f)", _vecBones[ iBone ]->at( i ).iFrame,
-			  _vecBones[ iBone ]->at( i ).fPos[0],
-			  _vecBones[ iBone ]->at( i ).fPos[1],
-			  _vecBones[ iBone ]->at( i ).fPos[2],
-			  _vecBones[ iBone ]->at( i ).fRotation[ 0 ],
-			  _vecBones[ iBone ]->at( i ).fRotation[ 1 ],
-			  _vecBones[ iBone ]->at( i ).fRotation[ 2 ],
-			  _vecBones[ iBone ]->at( i ).fRotation[ 3 ]
+	for( int32_t i = 0; i < _vecMotions[ iBone ]->size(); ++i )
+		NSLog( @"Motion %d, (%f,%f,%f), (%f,%f,%f,%f)", _vecMotions[ iBone ]->at( i ).iFrame,
+			  _vecMotions[ iBone ]->at( i ).fPos[0],
+			  _vecMotions[ iBone ]->at( i ).fPos[1],
+			  _vecMotions[ iBone ]->at( i ).fPos[2],
+			  _vecMotions[ iBone ]->at( i ).fRotation[ 0 ],
+			  _vecMotions[ iBone ]->at( i ).fRotation[ 1 ],
+			  _vecMotions[ iBone ]->at( i ).fRotation[ 2 ],
+			  _vecMotions[ iBone ]->at( i ).fRotation[ 3 ]
 			  );
 
 #endif
@@ -468,7 +469,7 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 	//verify
 	for( int32_t i = 0; i < iNumBones; ++i )
 	{
-		NSLog( @"Size: %d %d", i, _vecBones[ i ]->size() );
+		NSLog( @"Size: %d %d", i, _vecMotions[ i ]->size() );
 	}
 #endif
 
@@ -478,22 +479,43 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 	_dicBones = nil;
 
 	//Keep reference
-	_reader = reader;
 	_fCurrentFrame = -1.f;
-	_pBones = _reader->getBones(); 		
-	_iNumBones = _reader->getNumBones();
+	for( int32_t i = 0; i < reader->getNumBones(); ++i )
+	{
+		_vecBones.push_back( reader->getBones()[ i ] );
+	}
+
+
+	int32_t iNumIKs = reader->getNumIKs();
+	mmd_ik* pIK = reader->getIKs();
+	for( int32_t i = 0; i < iNumIKs; ++i )
+	{
+		ik_item ik = {0};
+		ik.ik_bone_index = pIK->ik_bone_index;
+		ik.ik_target_bone_index = pIK->ik_target_bone_index;
+		ik.ik_chain_length = pIK->ik_chain_length;
+		ik.iterations = pIK->iterations;
+		ik.control_weight = pIK->control_weight;
+
+		for( int32_t j = 0; j < pIK->ik_chain_length; ++j )
+			ik._vec_ik_child_bone_index.push_back( pIK->ik_child_bone_index[ j ] );
+		
+		_vecIKs.push_back( ik );
+
+		int32_t iChains = pIK->ik_chain_length;
+		pIK = (mmd_ik*)(uint8_t*)((uint8_t*)pIK + sizeof( mmd_ik ) + iChains * sizeof( uint16_t ));		
+	}
+
 	return true;
 }
 
 bool vmdMotionProvider::unbind()
 {
+	_vecMotions.clear();
+	_vecMotionsWork.clear();
 	_vecBones.clear();
-	_vecBonesWork.clear();
-	_pBones = NULL;
-	_iNumBones = 0;
+	_vecIKs.clear();
 	_fCurrentFrame = -1.f;
-	
-	_reader = NULL;
 	
 	return true;
 }

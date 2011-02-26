@@ -158,8 +158,14 @@ bool pmdReader::parseMaterials()
 		if( _pMaterials[ i ].texture_file_name[ 0 ] != 0 )
 		{
 			NSString* strFile = [NSString stringWithUTF8String: _pMaterials[ i ].texture_file_name];
-			NSLog( @"Texture:%s", _pMaterials[ i ].texture_file_name );
-			_pMaterials[ i ]._tex2D = [[Texture2D alloc] initWithImage: [UIImage imageNamed:strFile]];
+			
+			NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+			NSString* doc = [paths objectAtIndex:0];
+			
+			NSString* str = [NSString stringWithFormat:@"%@/%@", doc, strFile];
+			NSLog( @"Texture:%@", str);
+			
+			_pMaterials[ i ]._tex2D = [[Texture2D alloc] initWithImage: [UIImage imageWithContentsOfFile:str]];
 			_pMaterials[ i ]._tex = _pMaterials[ i ]._tex2D.name;
 			
 		}

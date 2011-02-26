@@ -14,17 +14,15 @@
 //
 void vmdMotionProvider::resolveIK()
 {
-	int32_t iNumIKs = _reader->getNumIKs();
-	mmd_ik* pIK = _reader->getIKs();
+	int32_t iNumIKs = _vecIKs.size();
 	
 	for( int32_t i = 0; i < iNumIKs; ++i )
 	{
-		ccdIK( pIK );
-		int32_t iChains = pIK->ik_chain_length;
-		pIK = (mmd_ik*)(uint8_t*)((uint8_t*)pIK + sizeof( mmd_ik ) + iChains * sizeof( uint16_t ));
+		ccdIK( &_vecIKs[ i ] );
 
-		for( int32_t i = 0; i < _iNumBones; ++i )
-			_vecBonesWork[ i ].bUpdated = false;
+		int32_t iSize = _vecBones.size();
+		for( int32_t i = 0; i < iSize; ++i )
+			_vecMotionsWork[ i ].bUpdated = false;
 	}
 	
 }
@@ -42,7 +40,7 @@ void vmdMotionProvider::makeQuaternion(float* quat, float angle, PVRTVec3 axis )
 void vmdMotionProvider::getCurrentPosition( PVRTVec3& vec, int32_t iIndex)
 {
 	updateBoneMatrix(iIndex);
-	mmd_bone& b = _pBones[ iIndex ];
+	mmd_bone& b = _vecBones[ iIndex ];
 
 	PVRTMat4 mat;
 	PVRTMatrixTranslationF( mat,
@@ -50,7 +48,7 @@ void vmdMotionProvider::getCurrentPosition( PVRTVec3& vec, int32_t iIndex)
 						   -b.bone_head_pos[ 1 ],
 						   -b.bone_head_pos[ 2 ] );
 	
-	mat = _vecBonesWork[ iIndex ].mat * mat;
+	mat = _vecMotionsWork[ iIndex ].mat * mat;
 
 	vec = mat * PVRTVec4( b.bone_head_pos[ 0 ],
 						 b.bone_head_pos[ 1 ],
@@ -62,20 +60,20 @@ void vmdMotionProvider::clearUpdateFlags( int32_t iCurrentBone, int32_t iTargetB
 {
 	while( iCurrentBone != iTargetBone )
 	{
-		_vecBonesWork[ iTargetBone ].bUpdated = false;
-		if( _pBones[ iTargetBone ].parent_bone_index != 0xffff )
+		_vecMotionsWork[ iTargetBone ].bUpdated = false;
+		if( _vecBones[ iTargetBone ].parent_bone_index != 0xffff )
 		{
-			iTargetBone = _pBones[ iTargetBone ].parent_bone_index;
+			iTargetBone = _vecBones[ iTargetBone ].parent_bone_index;
 		}
 		else
 		{
 			return;
 		}
 	}
-	_vecBonesWork[ iCurrentBone ].bUpdated = false;
+	_vecMotionsWork[ iCurrentBone ].bUpdated = false;
 }
 
-void vmdMotionProvider::ccdIK( mmd_ik* pIK)
+void vmdMotionProvider::ccdIK( ik_item* pIK)
 {
 	int32_t iBoneTarget = pIK->ik_target_bone_index;
 	
@@ -86,14 +84,14 @@ void vmdMotionProvider::ccdIK( mmd_ik* pIK)
 	{
 		for( int32_t j = 0; j < pIK->ik_chain_length; ++j )
 		{
-			int32_t iCurrentBone = pIK->ik_child_bone_index[ j ];
+			int32_t iCurrentBone = pIK->_vec_ik_child_bone_index[ j ];
 			
 			clearUpdateFlags( iCurrentBone, iBoneTarget );
 
 			PVRTVec3 vecTarget;
 			getCurrentPosition( vecTarget, iBoneTarget );
 			
-			switch( _vecBonesWork[ iCurrentBone ].iJointType )
+			switch( _vecMotionsWork[ iCurrentBone ].iJointType )
 			{
 				case JOINT_TYPE_KNEE:
 					if( i == 0 )
@@ -101,7 +99,7 @@ void vmdMotionProvider::ccdIK( mmd_ik* pIK)
 						PVRTVec3 vecTargetInvs;
 						PVRTVec3 vecEffectorInvs;
 						getCurrentPosition( vecTargetInvs, iCurrentBone );
-						getCurrentPosition( vecEffectorInvs, pIK->ik_child_bone_index[ pIK->ik_chain_length - 1 ] );
+						getCurrentPosition( vecEffectorInvs, pIK->_vec_ik_child_bone_index[ pIK->ik_chain_length - 1 ] );
 						
 						float eff_len = ( vecEffector - vecEffectorInvs ).length();
 						float b_len = ( vecTargetInvs - vecEffectorInvs ).length();
@@ -114,11 +112,11 @@ void vmdMotionProvider::ccdIK( mmd_ik* pIK)
 							PVRTVec3 vecAxis( -1, 0, 0 );
 							
 							makeQuaternion( fQuat, angle, vecAxis );
-							quaternionMul( _vecBonesWork[ iCurrentBone ].fQuaternion,
-										  _vecBonesWork[ iCurrentBone ].fQuaternion, 
+							quaternionMul( _vecMotionsWork[ iCurrentBone ].fQuaternion,
+										  _vecMotionsWork[ iCurrentBone ].fQuaternion, 
 										  fQuat );
-							quaternionToMatrixPreserveTranslate( _vecBonesWork[ iCurrentBone ].matCurrent.f,
-																_vecBonesWork[ iCurrentBone ].fQuaternion );
+							quaternionToMatrixPreserveTranslate( _vecMotionsWork[ iCurrentBone ].matCurrent.f,
+																_vecMotionsWork[ iCurrentBone ].fQuaternion );
 						}
 					}
 					break;
@@ -127,7 +125,7 @@ void vmdMotionProvider::ccdIK( mmd_ik* pIK)
 						return;
 					
 					updateBoneMatrix( iCurrentBone );
-					PVRTMat4 matCurrent = _vecBonesWork[ iCurrentBone ].mat;
+					PVRTMat4 matCurrent = _vecMotionsWork[ iCurrentBone ].mat;
 					PVRTMatrixInverse( matCurrent, matCurrent );
 					
 					PVRTVec3 vecInvEffector = matCurrent * PVRTVec4( vecEffector, 1.f );
@@ -151,11 +149,11 @@ void vmdMotionProvider::ccdIK( mmd_ik* pIK)
 							float fQuat[ 4 ];
 							
 							makeQuaternion( fQuat, fAngle, vecAxis );
-							quaternionMul( _vecBonesWork[ iCurrentBone ].fQuaternion,
-										  _vecBonesWork[ iCurrentBone ].fQuaternion,
+							quaternionMul( _vecMotionsWork[ iCurrentBone ].fQuaternion,
+										  _vecMotionsWork[ iCurrentBone ].fQuaternion,
 										  fQuat );
-							quaternionToMatrixPreserveTranslate( _vecBonesWork[ iCurrentBone ].matCurrent.f,
-																_vecBonesWork[ iCurrentBone ].fQuaternion );
+							quaternionToMatrixPreserveTranslate( _vecMotionsWork[ iCurrentBone ].matCurrent.f,
+																_vecMotionsWork[ iCurrentBone ].fQuaternion );
 						}
 					}
 			}
