@@ -129,6 +129,12 @@ void pmdRenderer::render()
 		else
 			glDisable(GL_BLEND);
 		
+		if( _vecMaterials[ i ].edge_flag )
+			glDisable(GL_CULL_FACE);
+		else
+			glEnable(GL_CULL_FACE);
+		
+		
 		int32_t iShaderIndex = 0;
 		
 		if( _vecMaterials[ i ]._tex )

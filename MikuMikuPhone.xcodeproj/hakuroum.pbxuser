@@ -4,14 +4,14 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1051, 533}}";
 			sepNavSelRange = "{647, 0}";
-			sepNavVisRange = "{34, 977}";
+			sepNavVisRange = "{0, 1011}";
 		};
 	};
 	1D3623250D0F684500981E51 /* MikuMikuPhoneAppDelegate.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1051, 2851}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 2838}}";
 			sepNavSelRange = "{4846, 0}";
-			sepNavVisRange = "{4453, 888}";
+			sepNavVisRange = "{4442, 899}";
 		};
 	};
 	1D6058900D05DD3D006BFB54 /* MikuMikuPhone */ = {
@@ -22,8 +22,8 @@
 	};
 	2514C26D10084DB100A42282 /* ES1Renderer.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1051, 445}}";
-			sepNavSelRange = "{0, 0}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 481}}";
+			sepNavSelRange = "{122, 6}";
 			sepNavVisRange = "{0, 622}";
 		};
 	};
@@ -31,26 +31,26 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1051, 1729}}";
 			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{2859, 1085}";
+			sepNavVisRange = "{2813, 1154}";
 		};
 	};
 	2514C26F10084DB100A42282 /* ES2Renderer.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1051, 650}}";
 			sepNavSelRange = "{808, 0}";
-			sepNavVisRange = "{195, 801}";
+			sepNavVisRange = "{0, 788}";
 		};
 	};
 	2514C27010084DB100A42282 /* ES2Renderer.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1333, 5252}}";
-			sepNavSelRange = "{2684, 0}";
-			sepNavVisRange = "{2476, 586}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 5330}}";
+			sepNavSelRange = "{2753, 0}";
+			sepNavVisRange = "{2431, 843}";
 		};
 	};
 	2514C27110084DB100A42282 /* ESRenderer.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1051, 445}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 481}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 339}";
 		};
@@ -73,14 +73,14 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1051, 585}}";
 			sepNavSelRange = "{1335, 0}";
-			sepNavVisRange = "{139, 1273}";
+			sepNavVisRange = "{75, 1337}";
 		};
 	};
 	28FD14FD0DC6FC130079059D /* EAGLView.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1051, 2210}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1223, 2132}}";
 			sepNavSelRange = "{411, 0}";
-			sepNavVisRange = "{0, 692}";
+			sepNavVisRange = "{0, 698}";
 		};
 	};
 	29B97313FDCFA39411CA2CEA /* Project object */ = {
@@ -92,9 +92,9 @@
 			1D6058900D05DD3D006BFB54 /* MikuMikuPhone */,
 		);
 		breakpoints = (
-			4DF177C512EB7061003E4946 /* pmdRenderer.mm:400 */,
+			4DF177C512EB7061003E4946 /* pmdRenderer.mm:406 */,
 			4D1C5FDA130A2C680057A181 /* SGXSkininngEvaluator.mm:54 */,
-			4D1C6429130B628D0057A181 /* pmdRenderer.mm:289 */,
+			4D1C6429130B628D0057A181 /* pmdRenderer.mm:295 */,
 		);
 		codeSenseManager = 4D5583F612E1291B00CD805E /* Code sense */;
 		executables = (
@@ -364,7 +364,7 @@
 		fRef = 4D55854D12E17A1900CD805E /* pmdRenderer.mm */;
 		name = "pmdRenderer.mm: 351";
 		rLen = 94;
-		rLoc = 12869;
+		rLoc = 12974;
 		rType = 0;
 		vrLen = 1608;
 		vrLoc = 9162;
@@ -383,7 +383,7 @@
 		ignoreCount = 0;
 		lineNumber = 54;
 		location = MikuMikuPhone;
-		modificationTime = 320456501.695301;
+		modificationTime = 320472043.024569;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 	};
@@ -397,7 +397,7 @@
 		vrLen = 356;
 		vrLoc = 0;
 	};
-	4D1C6429130B628D0057A181 /* pmdRenderer.mm:289 */ = {
+	4D1C6429130B628D0057A181 /* pmdRenderer.mm:295 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
@@ -409,9 +409,9 @@
 		functionName = "pmdRenderer::createVbo()";
 		hitCount = 0;
 		ignoreCount = 0;
-		lineNumber = 289;
+		lineNumber = 295;
 		location = MikuMikuPhone;
-		modificationTime = 320456501.734806;
+		modificationTime = 320472043.062406;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 	};
@@ -551,16 +551,16 @@
 	};
 	4D55842712E1315000CD805E /* pmdReader.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {977, 2097}}";
-			sepNavSelRange = "{646, 12}";
-			sepNavVisRange = "{423, 588}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 2097}}";
+			sepNavSelRange = "{1218, 0}";
+			sepNavVisRange = "{1223, 598}";
 		};
 	};
 	4D55842812E1315000CD805E /* pmdReader.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1333, 2990}}";
-			sepNavSelRange = "{2765, 0}";
-			sepNavVisRange = "{2688, 546}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 3211}}";
+			sepNavSelRange = "{1028, 0}";
+			sepNavVisRange = "{949, 534}";
 		};
 	};
 	4D55845212E13AF100CD805E /* PBXTextBookmark */ = {
@@ -582,17 +582,17 @@
 	};
 	4D55854C12E17A1900CD805E /* pmdRenderer.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1362, 1430}}";
-			sepNavSelRange = "{597, 0}";
-			sepNavVisRange = "{207, 1015}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 1222}}";
+			sepNavSelRange = "{1221, 0}";
+			sepNavVisRange = "{923, 1335}";
 			sepNavWindowFrame = "{{19, 4}, {1421, 869}}";
 		};
 	};
 	4D55854D12E17A1900CD805E /* pmdRenderer.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1051, 13741}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 13780}}";
 			sepNavSelRange = "{930, 0}";
-			sepNavVisRange = "{587, 581}";
+			sepNavVisRange = "{590, 578}";
 			sepNavWindowFrame = "{{19, 4}, {1421, 869}}";
 		};
 	};
@@ -1706,7 +1706,7 @@
 		fRef = 4D55854D12E17A1900CD805E /* pmdRenderer.mm */;
 		name = "pmdRenderer.mm: 203";
 		rLen = 0;
-		rLoc = 5277;
+		rLoc = 5382;
 		rType = 0;
 		vrLen = 670;
 		vrLoc = 5052;
@@ -1787,7 +1787,7 @@
 		fRef = 4D55854D12E17A1900CD805E /* pmdRenderer.mm */;
 		fallbackIsa = XCBuildMessageTextBookmark;
 		rLen = 1;
-		rLoc = 206;
+		rLoc = 212;
 		rType = 1;
 	};
 	4DC3A3801319C56F00BF03C8 /* PBXTextBookmark */ = {
@@ -1795,7 +1795,7 @@
 		fRef = 4D55854D12E17A1900CD805E /* pmdRenderer.mm */;
 		name = "pmdRenderer.mm: 198";
 		rLen = 0;
-		rLoc = 5279;
+		rLoc = 5384;
 		rType = 0;
 		vrLen = 1021;
 		vrLoc = 5837;
@@ -1845,7 +1845,7 @@
 		fRef = 4D55854D12E17A1900CD805E /* pmdRenderer.mm */;
 		name = "pmdRenderer.mm: 320";
 		rLen = 0;
-		rLoc = 8719;
+		rLoc = 8824;
 		rType = 0;
 		vrLen = 966;
 		vrLoc = 8153;
@@ -1886,9 +1886,9 @@
 	};
 	4DF1757F12E7BE35003E4946 /* vmdReader.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1051, 1469}}";
-			sepNavSelRange = "{1630, 0}";
-			sepNavVisRange = "{1199, 818}";
+			sepNavIntBoundsRect = "{{0, 0}, {1051, 1560}}";
+			sepNavSelRange = "{229, 0}";
+			sepNavVisRange = "{282, 694}";
 		};
 	};
 	4DF1758012E7BE35003E4946 /* vmdReader.mm */ = {
@@ -2081,7 +2081,7 @@
 		path = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.2.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSArray.h;
 		sourceTree = "<absolute>";
 	};
-	4DF177C512EB7061003E4946 /* pmdRenderer.mm:400 */ = {
+	4DF177C512EB7061003E4946 /* pmdRenderer.mm:406 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
@@ -2093,9 +2093,9 @@
 		functionName = "pmdRenderer::partitioning( pmdReader* reader, SkinningEvaluator* eval, int32_t iStart, int32_t iNumIndices )";
 		hitCount = 0;
 		ignoreCount = 0;
-		lineNumber = 400;
+		lineNumber = 406;
 		location = MikuMikuPhone;
-		modificationTime = 320456501.651429;
+		modificationTime = 320472042.983809;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 	};
