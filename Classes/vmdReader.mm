@@ -104,6 +104,14 @@ bool vmdReader::parseSkins()
 	NSLog( @"Num Skins: %d", i );
 	_iNumSkins = i;
 	_pSkins = (vmd_skin*)&_pData[ _iOffset ];
+	
+#ifdef DUMP_SKIN_MOTION
+	for( int32_t i = 0; i < _iNumSkins; ++i )
+	{
+		NSString* strSkinName = [NSString stringWithCString:(const char*)&_pSkins[ i ].SkinName encoding:NSShiftJISStringEncoding];
+		NSLog( @"Skin motion: %d %@, %d, %f", i, strSkinName, _pSkins[ i ].FlameNo, _pSkins[ i ].Weight );
+	}
+#endif
 	_iOffset += i * sizeof( vmd_skin );
 	
 	if( _iOffset > [_data length] )

@@ -18,6 +18,7 @@ enum {
 	ATTRIB_NORMAL,
 	ATTRIB_UV,
 	ATTRIB_BONE,
+	ATTRIB_SKINANIMATION,
 };
 
 #pragma mark Ctor
@@ -50,6 +51,18 @@ bool pmdRenderer::unload()
 	{
 		glDeleteBuffers(1, &_vboIndex);
 		_vboIndex = NULL;
+	}
+
+	if( _vboSkinAnimation )
+	{
+		glDeleteBuffers( 1, &_vboSkinAnimation );
+		_iNumSkinAnimations = 0;
+	
+		for( int32_t i = 0; i < _vecSkinAnimation.size(); ++i )
+		{
+			delete [] _vecSkinAnimation[ i ];
+		}
+		_vecSkinAnimation.clear();
 	}
 	
 	for( int32_t i = 0; i < _vecMaterials.size(); ++i )
@@ -93,7 +106,7 @@ void pmdRenderer::render()
     
     glVertexAttribPointer(ATTRIB_BONE, 4, GL_UNSIGNED_BYTE, GL_FALSE, iStride, BUFFER_OFFSET( 8 * sizeof(GLfloat) ));
     glEnableVertexAttribArray(ATTRIB_BONE);
-
+	
 	// Bind the IB
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vboIndex);
 	    
@@ -111,9 +124,24 @@ void pmdRenderer::render()
 	GLuint currentProgram = -1;
 	
 	std::vector<bone_stats>* matrixPalette = NULL;
+
+	float fWeight;
 	if( _motionProvider )
 	{
 		matrixPalette = _motionProvider->getMatrixPalette();
+
+		if( _bPerformSkinmeshAnimation )
+		{
+			int32_t iSkinAnimationIndex = _motionProvider->getSkinAnimationParameters( fWeight );
+			
+			if( iSkinAnimationIndex != _iCurrentSkinAnimationIndex )
+			{
+				_iCurrentSkinAnimationIndex = iSkinAnimationIndex;
+				//Update vbo
+				glBindBuffer(GL_ARRAY_BUFFER, _vboSkinAnimation);
+				glBufferSubData(GL_ARRAY_BUFFER, 0, _iSizeSkinanimatinVertices * sizeof(skinanimation_vertex), _vecSkinAnimation[ _iCurrentSkinAnimationIndex-1 ] );
+			}
+		}
 	}
 	
 	std::vector< DRAW_LIST >::iterator itBegin = _vecDrawList.begin();
@@ -135,11 +163,11 @@ void pmdRenderer::render()
 			glEnable(GL_CULL_FACE);
 		
 		
-		int32_t iShaderIndex = 0;
+		int32_t iShaderIndex = SHADER_NOTEXTURE;
 		
 		if( _vecMaterials[ i ]._tex )
 		{
-			iShaderIndex = 1;
+			iShaderIndex = SHADER_TEXTURE;
 			glUseProgram(_shaders[iShaderIndex]._program);		
 			glEnable(GL_TEXTURE_2D);
 			glActiveTexture(GL_TEXTURE0);
@@ -155,11 +183,42 @@ void pmdRenderer::render()
 		}
 		else
 		{
-			iShaderIndex = 0;
+			iShaderIndex = SHADER_NOTEXTURE;
 			glUseProgram(_shaders[iShaderIndex]._program);		
 			glDisable(GL_TEXTURE_2D);
 			glDisableVertexAttribArray(ATTRIB_UV);
 			currentProgram = _shaders[iShaderIndex]._program;
+		}
+		
+		//
+		//
+		//Bind skin animation
+		if( _bPerformSkinmeshAnimation )
+		{
+			if( itBegin->bSkinMesh )
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, _vboSkinAnimation);
+				
+				iStride = sizeof(skinanimation_vertex);
+				glVertexAttribPointer(ATTRIB_SKINANIMATION, 3, GL_FLOAT, GL_FALSE, iStride, BUFFER_OFFSET( 0 ));
+				glEnableVertexAttribArray(ATTRIB_SKINANIMATION);
+				
+				if( iShaderIndex == SHADER_NOTEXTURE )
+					iShaderIndex = SHADER_SKIN;
+				else
+					iShaderIndex = SHADER_SKIN_TEXTURE;
+				
+				glUseProgram(_shaders[iShaderIndex]._program);		
+				currentProgram = _shaders[iShaderIndex]._program;
+				
+				glUniform1f( _shaders[iShaderIndex]._uiSkinWeight, fWeight );
+				
+			}
+			else
+			{
+				glDisableVertexAttribArray(ATTRIB_SKINANIMATION);
+			}
+
 		}
 		
 		glUniform4f( _shaders[iShaderIndex]._uiMaterialDiffuse, _vecMaterials[ i ].diffuse_color[ 0 ],
@@ -188,12 +247,12 @@ void pmdRenderer::render()
 				}
  
 			}
+
 		}
 			
 		if( currentProgram != lastProgram )
 		{
 			glUniformMatrix4fv( _shaders[iShaderIndex]._uiMatrixP, 1, GL_FALSE,  mVP.ptr());
-			
 			glUniform3f( _shaders[iShaderIndex]._uiLight0, 0.f, 10.f, 1.f );
 		}
 		lastProgram = currentProgram;
@@ -210,6 +269,9 @@ bool pmdRenderer::init( pmdReader* reader, vmdReader* motion )
 {
 	if( reader == NULL )
 		return false;
+	
+	_bPerformSkinmeshAnimation = true;
+//	_bPerformSkinmeshAnimation = false;
 
 	if( motion != NULL )
 	{
@@ -228,22 +290,19 @@ bool pmdRenderer::init( pmdReader* reader, vmdReader* motion )
 
 	if( _shaders[ 0 ]._program == 0 )
 	{
-		loadShaders(&_shaders[ 0 ], @"ShaderPlain", @"ShaderPlain" );
-#if defined(DEBUG)
-		if (!validateProgram(_shaders[ 0 ]._program))
+		NSString* strVShaders[NUM_SHADERS] = { @"ShaderPlain", @"ShaderPlainTex", @"ShaderPlainSkin",  @"ShaderPlainSkin" };
+		NSString* strFShaders[NUM_SHADERS] = { @"ShaderPlain", @"ShaderPlainTex", @"ShaderPlainSkin",  @"ShaderPlainTex" };
+		for( int32_t i = 0; i < NUM_SHADERS; ++i )
 		{
-			NSLog(@"Failed to validate program: %d", _shaders[ 0 ]._program);
-			return false;
-		}
-#endif
-		loadShaders(&_shaders[ 1 ], @"ShaderPlainTex", @"ShaderPlainTex" );
+			loadShaders(&_shaders[ i ], strVShaders[ i ], strFShaders[ i ] );
 #if defined(DEBUG)
-		if (!validateProgram(_shaders[ 1 ]._program))
-		{
-			NSLog(@"Failed to validate program: %d", _shaders[ 1 ]._program);
-			return false;
-		}
+			if (!validateProgram(_shaders[ i ]._program))
+			{
+				NSLog(@"Failed to validate program: %d", _shaders[ i ]._program);
+				return false;
+			}
 #endif
+		}		
 	}	
 	
 	//Init matrices
@@ -546,7 +605,10 @@ bool pmdRenderer::createMatrixMapping( NSArray* sortedKeys, NSDictionary* dicMat
 	return true;
 }
 
-int32_t pmdRenderer::getMappedVertices( mmd_vertex* pVertices, const int32_t iVertexIndex, const uint32_t iVertexKey )
+int32_t pmdRenderer::getMappedVertices( mmd_vertex* pVertices,
+									   const int32_t iVertexIndex,
+									   const uint32_t iVertexKey,
+									   const bool bSkinning )
 {
 	
 	std::map< int32_t, int32_t >::iterator it = _mapVertexMapping[ iVertexIndex ].find( iVertexKey );
@@ -569,7 +631,7 @@ int32_t pmdRenderer::getMappedVertices( mmd_vertex* pVertices, const int32_t iVe
 	vertex.uv[ 1 ] = pVertices[ iVertexIndex ].uv[ 1 ];
 	vertex.bone[ 0 ] = uint8_t(iVertexKey >> 16);
 	vertex.bone[ 1 ] = uint8_t(iVertexKey & 0xffff);
-	vertex.bone[ 2 ] = 0;
+	vertex.bone[ 2 ] = bSkinning;
 	vertex.bone[ 3 ] = uint8_t( float(pVertices[ iVertexIndex ].bone_weight) / 100.f * 255.f);
 	_vecMappedVertex.push_back( vertex );
 	
@@ -579,6 +641,9 @@ int32_t pmdRenderer::getMappedVertices( mmd_vertex* pVertices, const int32_t iVe
 
 int16_t pmdRenderer::getMappedBone( std::vector< int32_t >*pVec, const int32_t iBone )
 {
+	//
+	//Get the bone index in current matrix palette skinning entries
+	//
 	int32_t iCount = pVec->size();
 	int32_t iIndex = -1;
 	for( int32_t i = 0; i < iCount; ++i )
@@ -621,6 +686,10 @@ bool pmdRenderer::partitionMeshes( pmdReader* reader )
 
 	std::vector< int16_t > vecIndices;
 	int32_t iBatchIndex = 0;
+	
+	//
+	//1. Check bone ussage stats and perform pertitioning if necessary
+	//
 	
 	for( int32_t i = 0; i < iMaterials; ++i )
 	{
@@ -696,7 +765,7 @@ bool pmdRenderer::partitionMeshes( pmdReader* reader )
 
 				}
 
-				DRAW_LIST list;
+				DRAW_LIST list = { 0 };
 				list.iMaterialIndex = i;
 				list.iNumIndices = [indices count];
 				_vecDrawList.push_back( list );
@@ -740,7 +809,7 @@ bool pmdRenderer::partitionMeshes( pmdReader* reader )
 				}
 			}
 			
-			DRAW_LIST list;
+			DRAW_LIST list = { 0 };
 			list.iMaterialIndex = i;
 			list.iNumIndices = iNumIndices;
 			_vecDrawList.push_back( list );
@@ -760,6 +829,10 @@ bool pmdRenderer::partitionMeshes( pmdReader* reader )
 	
 	//
 	//Now we have index list
+	//
+
+	//
+	//2. Crete matrix mapping for vs constant array
 	//
 	
 	//dicMatrixRefCount
@@ -783,10 +856,145 @@ bool pmdRenderer::partitionMeshes( pmdReader* reader )
 
 	_vecMappedVertex.clear();
 	_mapVertexMapping.clear();
+
+	
+	//
+	//3. Create skin mesh mapping
+	//
+	NSMutableDictionary* dicSkinmeshVertices = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary* dicSkinmeshVerticesReverse = [[NSMutableDictionary alloc] init];
+	if( _bPerformSkinmeshAnimation )
+	{
+		//
+		//Note:
+		//now only support 1 base mesh
+		//
+		
+		int32_t iNumSkinAnimations = reader->getNumSkinAnimations();
+		mmd_skin* pSkin = reader->getSkinAnimations();
+		for( int32_t i = 0; i < iNumSkinAnimations; ++i )
+		{
+			if( pSkin->skin_type == 0 )	//if base skin data
+			{
+				for( int32_t j = 0; j < pSkin->skin_vert_count; ++j )
+				{
+					[dicSkinmeshVertices setObject:[NSNumber numberWithBool:true]
+											forKey:[NSNumber numberWithInt:pSkin->skin_vert_data[ j ].vert_index] ];
+					[dicSkinmeshVerticesReverse setObject:[NSNumber numberWithInt:pSkin->skin_vert_data[ j ].vert_index]
+												   forKey:[NSNumber numberWithInt:j]];
+				}
+			}
+
+			pSkin = (mmd_skin*)((uint8_t*)pSkin + sizeof( mmd_skin ) + pSkin->skin_vert_count * sizeof( mmd_skin_vertex ) );
+		}
+		
+		_iNumSkinAnimations = iNumSkinAnimations;
+	}
+	
+	//
+	//4. vbo, index buffer registrations
+	//
+	
+	//now it takes 2 passes
+	//first pass: regsiter vertices with skinning animation
+	//2nd pass: register vertices without skinning animation
 	
 	std::vector< DRAW_LIST >::iterator itBegin = _vecDrawList.begin();
 	std::vector< DRAW_LIST >::iterator itEnd = _vecDrawList.end();
 	std::vector< uint16_t > vecMappedIndices;
+	if( _bPerformSkinmeshAnimation )
+	{
+		NSMutableDictionary* dicSkinningVertexMap = [[[NSMutableDictionary alloc] init] autorelease];
+		
+		for( ;itBegin != itEnd; ++itBegin )		
+		{
+			int32_t iNumIndices = itBegin->iNumIndices;
+			NSLog( @"Batch material:%d # indices:%d", itBegin->iMaterialIndex, iNumIndices );
+			std::vector< int32_t >* pVec = &itBegin->vecMatrixPalette;
+			for( int32_t i = 0; i < iNumIndices; ++i )
+			{
+				int32_t iCurrentIndex = vecIndices[ iIndex ];
+				if( [dicSkinmeshVertices objectForKey:[NSNumber numberWithInt:iCurrentIndex] ] != nil )
+				{
+					itBegin->bSkinMesh = true;
+					
+					int16_t iBone0 = pVertices[ iCurrentIndex ].getBoneIndex( 0 );
+					int16_t iMappedBone0 = getMappedBone( pVec, iBone0 ); 
+					
+					int16_t iBone1 = pVertices[ iCurrentIndex ].getBoneIndex( 1 );
+					int16_t iMappedBone1 = -1;
+					int32_t iMappedVertexIndex;
+					if( iBone1 != -1 )
+					{
+						iMappedBone1 = getMappedBone( pVec, iBone1 ); 
+						uint32_t iKey = iMappedBone0 << 16 | iMappedBone1;
+						iMappedVertexIndex = getMappedVertices( pVertices, iCurrentIndex, iKey, true );
+					}
+					else
+					{
+						uint32_t iKey = iMappedBone0 << 16;
+						iMappedVertexIndex = getMappedVertices( pVertices, iCurrentIndex, iKey, true );
+					}
+					
+					NSNumber* num = [NSNumber numberWithInt:iCurrentIndex];
+					NSMutableDictionary* dic = [dicSkinningVertexMap objectForKey:num];
+					if( dic == nil )
+						dic = [[[NSMutableDictionary alloc] init] autorelease];
+					[dic setObject:num forKey:[NSNumber numberWithInt:iMappedVertexIndex]];
+					[dicSkinningVertexMap setObject:dic forKey:num];
+				} 
+				iIndex++;
+			}
+		}
+
+		_iSizeSkinanimatinVertices = _vecMappedVertex.size();
+		NSLog( @"# of skinanimation vertices: %d", _iSizeSkinanimatinVertices );
+		
+		//
+		//dicSkinmeshVertices: dic[ vertex -> bool ];
+		//dicSkinmeshVerticesReverse: dic[ base index -> vertex index in vbo ];
+		//
+
+		
+		//Create skin data arrayVBOs
+		mmd_skin* pSkin = reader->getSkinAnimations();
+		
+		for( int32_t i = 0; i< _iNumSkinAnimations; ++i )
+		{
+			skinanimation_vertex* pVertices = new skinanimation_vertex[ _iSizeSkinanimatinVertices ];
+			//Clear
+			for( int32_t j = 0; j < _iSizeSkinanimatinVertices; ++j )
+			{
+				pVertices[ j ].pos[ 0 ] = pVertices[ j ].pos[ 1 ] = pVertices[ j ].pos[ 2 ] = 0.f;
+			}
+			
+			if( pSkin->skin_type != 0 )
+			{
+				for( int32_t j = 0; j < pSkin->skin_vert_count; ++j )
+				{
+					
+					NSNumber* num = [dicSkinmeshVerticesReverse objectForKey:[NSNumber numberWithInt:pSkin->skin_vert_data[ j ].vert_index]];
+					NSDictionary* dic = [dicSkinningVertexMap objectForKey:num];
+					for( NSNumber* n in dic )
+					{
+						int32_t iIndex = [n intValue];
+						pVertices[ iIndex ].pos[ 0 ] = pSkin->skin_vert_data[ j ].pos[ 0 ];
+						pVertices[ iIndex ].pos[ 1 ] = pSkin->skin_vert_data[ j ].pos[ 1 ];
+						pVertices[ iIndex ].pos[ 2 ] = pSkin->skin_vert_data[ j ].pos[ 2 ];
+					}	
+				}
+				_vecSkinAnimation.push_back( pVertices );
+			}
+
+			pSkin = (mmd_skin*)((uint8_t*)pSkin + sizeof( mmd_skin ) + pSkin->skin_vert_count * sizeof( mmd_skin_vertex ) );
+		}
+	}
+
+	//2nd pass
+	itBegin = _vecDrawList.begin();
+	itEnd = _vecDrawList.end();
+	iIndex = 0;
+	
 	for( ;itBegin != itEnd; ++itBegin )		
 	{
 		int32_t iNumIndices = itBegin->iNumIndices;
@@ -804,21 +1012,22 @@ bool pmdRenderer::partitionMeshes( pmdReader* reader )
 			{
 				iMappedBone1 = getMappedBone( pVec, iBone1 ); 
 				uint32_t iKey = iMappedBone0 << 16 | iMappedBone1;
-				int32_t iMappedIndex = getMappedVertices( pVertices, iCurrentIndex, iKey );
+				int32_t iMappedIndex = getMappedVertices( pVertices, iCurrentIndex, iKey, false );
 				vecMappedIndices.push_back( iMappedIndex );
 			}
 			else
 			{
 				uint32_t iKey = iMappedBone0 << 16;
-				int32_t iMappedIndex = getMappedVertices( pVertices, iCurrentIndex, iKey );
+				int32_t iMappedIndex = getMappedVertices( pVertices, iCurrentIndex, iKey, false );
 				vecMappedIndices.push_back( iMappedIndex );
 			}
-			
 			iIndex++;
-			
-		}
+		}		
 	}
-		
+	
+	//
+	//5. create buffers
+	//
 	
 	//Create Index buffer
 	glGenBuffers(1, &_vboIndex);
@@ -833,12 +1042,28 @@ bool pmdRenderer::partitionMeshes( pmdReader* reader )
 	glBufferData(GL_ARRAY_BUFFER, iStride * _vecMappedVertex.size(), &_vecMappedVertex[ 0 ], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
+	if( _bPerformSkinmeshAnimation )
+	{
+		iStride = sizeof( skinanimation_vertex );
+		glGenBuffers(1, &_vboSkinAnimation);
+		glBindBuffer(GL_ARRAY_BUFFER, _vboSkinAnimation);	
+		
+		//Fill with Dummy data
+		skinanimation_vertex* pVertices = new skinanimation_vertex[_vecMappedVertex.size()];
+		glBufferData(GL_ARRAY_BUFFER, iStride * _vecMappedVertex.size(), pVertices, GL_STATIC_DRAW);
+
+		delete []pVertices;
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+	
 	NSLog( @"Duplicated vertices:%d", _vecMappedVertex.size() - reader->getNumVertices() );
     	
 	_vecMappedVertex.clear();
 	_mapVertexMapping.clear();
 	[dicMatrixRefCount release];
 	[dicMatrixRefArray release];
+	[dicSkinmeshVertices release];
+	[dicSkinmeshVerticesReverse release];
 	delete eval;
 	return true;
 }
@@ -966,8 +1191,9 @@ BOOL pmdRenderer::loadShaders( SHADER_PARAMS* params, NSString* strVsh, NSString
     glBindAttribLocation(program, ATTRIB_NORMAL, "myNormal");
     glBindAttribLocation(program, ATTRIB_UV, "myUV");
     glBindAttribLocation(program, ATTRIB_BONE, "myBone");
+    glBindAttribLocation(program, ATTRIB_SKINANIMATION, "mySkinAnimation");
 
-	    // Link program
+	// Link program
     if( !linkProgram(program) )
     {
         NSLog(@"Failed to link program: %d", program);
@@ -999,6 +1225,8 @@ BOOL pmdRenderer::loadShaders( SHADER_PARAMS* params, NSString* strVsh, NSString
 	params->_uiMaterialDiffuse = glGetUniformLocation(program, "vMaterialDiffuse");
 	params->_uiMaterialAmbient = glGetUniformLocation(program, "vMaterialAmbient");
 	params->_uiMaterialSpecular = glGetUniformLocation(program, "vMaterialSpecular");
+	params->_uiSkinWeight = glGetUniformLocation(program, "fSkinWeight");
+	
 
 	// Set the sampler2D uniforms to corresponding texture units
 	glUniform1i(glGetUniformLocation(program, "sTexture"), 0);

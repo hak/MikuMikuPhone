@@ -13,6 +13,8 @@ attribute highp vec3	myNormal;
 attribute mediump vec2	myUV;
 attribute mediump vec4	myBone;
 
+attribute highp vec3	mySkinAnimation;
+
 varying mediump vec2	texCoord;
 varying lowp	vec4	colorDiffuse;
 
@@ -33,9 +35,15 @@ uniform highp vec4		vMaterialDiffuse;
 uniform highp vec3		vMaterialAmbient;
 uniform highp vec4		vMaterialSpecular;
 
+uniform highp float		fSkinWeight;
+
+
 void main(void)
 {
 	highp vec4 p = vec4(myVertex,1);
+
+	highp vec4 pSkin = vec4(mySkinAnimation,0);
+	p = p + pSkin * myBone.z * fSkinWeight;
 	
 	highp mat4 m0 = uMatrixPalette[ int(myBone.x) ];
 	highp mat4 m1 = uMatrixPalette[ int(myBone.y) ];

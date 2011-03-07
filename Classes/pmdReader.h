@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "Texture2D.h"
 
+//#define DUMP_SKIN_VERTICES (1)
+
 #pragma pack(1)
 
 //Should be 38 bytes in size
@@ -146,6 +148,9 @@ public:
 
 	int32_t getNumBones() { return _iNumBones; }
 	mmd_bone* getBones() { return _pBones; }
+
+	int32_t getNumSkinAnimations() { return _iNumSkins; }
+	mmd_skin* getSkinAnimations() { return _pSkins; }
 
 	int32_t getNumIKs() { return _iNumIKs; }
 	mmd_ik* getIKs() { return _pIKs; }

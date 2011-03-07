@@ -46,17 +46,31 @@ struct bone_stats {
 	float fQuaternion[ 4 ];
 };
 
+struct skin_item
+{
+	int32_t		iIndex;
+	uint32_t	iFrame;
+	float		Weight;
+};
+
+
 class vmdMotionProvider {
 	NSMutableDictionary* _dicBones;
 
 	float _fCurrentFrame;
 	double _dStartTime;
-
+	bool _bLoopPlayback;
+	
 	uint32_t _uiMaxFrame;
 	std::vector<std::vector<motion_item>*> _vecMotions;
 	std::vector<bone_stats> _vecMotionsWork;	
 	std::vector<mmd_bone> _vecBones;
 	std::vector<ik_item> _vecIKs;
+
+	int32_t	_iCurrentSkinAnimationIndex;
+	float	_fSkinAnimationWeight;
+	std::vector<skin_item> _vecSkinAnimations;
+	int32_t _iCurrentSkinAnimationDataIndex;
 	
 	bool checkBones( pmdReader* reader, vmdReader* motion );
 	void interpolateLinear(float fFrame, motion_item *M0, motion_item *pM1, motion_item *pOut);
@@ -74,6 +88,10 @@ class vmdMotionProvider {
 	void clearUpdateFlags( int32_t iCurrentBone, int32_t iTargetBone );
 	void makeQuaternion(float* quat, float angle, PVRTVec3 axis );
 	
+	void bindSkinAnimation( pmdReader* reader, vmdReader* motion );
+	void unbindSkinAnimation();
+	void updateSkinAnimation();
+
 public:
 	vmdMotionProvider();
 	~vmdMotionProvider();
@@ -83,5 +101,6 @@ public:
 	
 	bool update( const double dTime );
 	std::vector<bone_stats>* getMatrixPalette() { return &_vecMotionsWork; }
+	int32_t getSkinAnimationParameters( float& fWeight );
 	
 };

@@ -13,6 +13,7 @@
 #pragma mark Ctor
 vmdMotionProvider::vmdMotionProvider(): _uiMaxFrame( 0 )
 {
+	_bLoopPlayback = true;
 }
 
 #pragma mark Dtor
@@ -247,6 +248,19 @@ bool vmdMotionProvider::update( const double dTime )
 		//Update frame
 		double dDelta = dTime - _dStartTime;
 		_fCurrentFrame = dDelta * FRAME_PERSEC;
+		
+		if( _bLoopPlayback
+		   && _fCurrentFrame > _uiMaxFrame )
+		{
+			_fCurrentFrame = 0.f;
+			_dStartTime = dTime;
+			int32_t iSize = _vecBones.size();
+			for( int32_t i = 0; i < iSize; ++i )
+			{
+				_vecMotionsWork[ i ].iCurrentIndex = 0;
+			}
+			_iCurrentSkinAnimationIndex = 0;
+		}
 	}
 
 	int32_t iSize = _vecBones.size();
@@ -338,6 +352,11 @@ bool vmdMotionProvider::update( const double dTime )
 		_vecMotionsWork[ i ].mat = _vecMotionsWork[ i ].mat * mat;
 	}
 		
+	//
+	//Skin update
+	//
+	updateSkinAnimation();
+	
 	return bReturn;
 }
 
@@ -503,14 +522,20 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 		_vecIKs.push_back( ik );
 
 		int32_t iChains = pIK->ik_chain_length;
-		pIK = (mmd_ik*)(uint8_t*)((uint8_t*)pIK + sizeof( mmd_ik ) + iChains * sizeof( uint16_t ));		
+		pIK = (mmd_ik*)((uint8_t*)pIK + sizeof( mmd_ik ) + iChains * sizeof( uint16_t ));		
 	}
 
+	//
+	//bind skin
+	//
+	bindSkinAnimation(reader, motion);
+	
 	return true;
 }
 
 bool vmdMotionProvider::unbind()
 {
+	unbindSkinAnimation();
 	_vecMotions.clear();
 	_vecMotionsWork.clear();
 	_vecBones.clear();

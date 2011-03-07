@@ -193,7 +193,14 @@ bool pmdReader::parseSkins()
 	{
 		mmd_skin* currentSkin = (mmd_skin*)&_pData[ _iOffset ];
 		int32_t iVertices = currentSkin->skin_vert_count;
-		NSLog( @"Skin %d, %d", i, iVertices );
+		NSString* strSkinName = [NSString stringWithCString:(const char*)&currentSkin->skin_name encoding:NSShiftJISStringEncoding];
+		NSLog( @"Skin %d:%@ num:%d type:%d", i, strSkinName, iVertices, currentSkin->skin_type);
+#ifdef DUMP_SKIN_VERTICES		
+		for( int32_t j = 0; j < iVertices; ++j )
+		{
+			NSLog( @"%d: %d", j, currentSkin->skin_vert_data[ j ].vert_index );
+		}
+#endif
 		_iOffset += sizeof( mmd_skin ) + iVertices * sizeof( mmd_skin_vertex );
 	}
 	

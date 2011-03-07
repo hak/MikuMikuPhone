@@ -29,8 +29,11 @@
 		4D55865312E19C5700CD805E /* PVRTVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D55864F12E19C5700CD805E /* PVRTVector.cpp */; };
 		4D55874112E2EED600CD805E /* ShaderPlain.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4D5585EA12E1900300CD805E /* ShaderPlain.fsh */; };
 		4D55874212E2EED600CD805E /* ShaderPlain.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4D5585EB12E1900300CD805E /* ShaderPlain.vsh */; };
+		4D5CC3A1131B6FAA001230E5 /* ShaderPlainSkin.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4DC3A50E131B682800BF03C8 /* ShaderPlainSkin.fsh */; };
+		4D5CC3A2131B6FAA001230E5 /* ShaderPlainSkin.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4DC3A50F131B682800BF03C8 /* ShaderPlainSkin.vsh */; };
 		4D9D026613150477006D8626 /* PickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D026413150477006D8626 /* PickerViewController.m */; };
 		4D9D026713150477006D8626 /* PickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D9D026513150477006D8626 /* PickerViewController.xib */; };
+		4DAE8ED2132497E8004FE496 /* vmdMotonProviderSkinAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4DAE8ED1132497E8004FE496 /* vmdMotonProviderSkinAnimation.mm */; };
 		4DF1755F12E7AB8D003E4946 /* ShaderPlainTex.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4DF1755112E7AB7F003E4946 /* ShaderPlainTex.fsh */; };
 		4DF1756012E7AB8D003E4946 /* ShaderPlainTex.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4DF1755212E7AB7F003E4946 /* ShaderPlainTex.vsh */; };
 		4DF1758112E7BE35003E4946 /* vmdReader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4DF1758012E7BE35003E4946 /* vmdReader.mm */; };
@@ -83,6 +86,9 @@
 		4D9D026313150477006D8626 /* PickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickerViewController.h; sourceTree = "<group>"; };
 		4D9D026413150477006D8626 /* PickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickerViewController.m; sourceTree = "<group>"; };
 		4D9D026513150477006D8626 /* PickerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PickerViewController.xib; sourceTree = "<group>"; };
+		4DAE8ED1132497E8004FE496 /* vmdMotonProviderSkinAnimation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = vmdMotonProviderSkinAnimation.mm; sourceTree = "<group>"; };
+		4DC3A50E131B682800BF03C8 /* ShaderPlainSkin.fsh */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; name = ShaderPlainSkin.fsh; path = Shaders/ShaderPlainSkin.fsh; sourceTree = "<group>"; };
+		4DC3A50F131B682800BF03C8 /* ShaderPlainSkin.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderPlainSkin.vsh; path = Shaders/ShaderPlainSkin.vsh; sourceTree = "<group>"; };
 		4DF1755112E7AB7F003E4946 /* ShaderPlainTex.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderPlainTex.fsh; path = Shaders/ShaderPlainTex.fsh; sourceTree = "<group>"; };
 		4DF1755212E7AB7F003E4946 /* ShaderPlainTex.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = ShaderPlainTex.vsh; path = Shaders/ShaderPlainTex.vsh; sourceTree = "<group>"; };
 		4DF1757F12E7BE35003E4946 /* vmdReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vmdReader.h; sourceTree = "<group>"; };
@@ -135,6 +141,7 @@
 				4DF175E912E7F439003E4946 /* vmdMotionProvider.h */,
 				4DF175EA12E7F439003E4946 /* vmdMotionProvider.mm */,
 				4DFB0BCA13119FD30039F3ED /* vmdMotonProviderIK.mm */,
+				4DAE8ED1132497E8004FE496 /* vmdMotonProviderSkinAnimation.mm */,
 				4DF1777D12EA9079003E4946 /* SGXSkininngEvaluator.h */,
 				4DF1777E12EA9079003E4946 /* SGXSkininngEvaluator.mm */,
 				4D9D02681315048E006D8626 /* UI */,
@@ -153,6 +160,8 @@
 		2514C27610084DB600A42282 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				4DC3A50E131B682800BF03C8 /* ShaderPlainSkin.fsh */,
+				4DC3A50F131B682800BF03C8 /* ShaderPlainSkin.vsh */,
 				4D5585EA12E1900300CD805E /* ShaderPlain.fsh */,
 				4D5585EB12E1900300CD805E /* ShaderPlain.vsh */,
 				4DF1755112E7AB7F003E4946 /* ShaderPlainTex.fsh */,
@@ -287,6 +296,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D5CC3A1131B6FAA001230E5 /* ShaderPlainSkin.fsh in Resources */,
+				4D5CC3A2131B6FAA001230E5 /* ShaderPlainSkin.vsh in Resources */,
 				4DF1755F12E7AB8D003E4946 /* ShaderPlainTex.fsh in Resources */,
 				4DF1756012E7AB8D003E4946 /* ShaderPlainTex.vsh in Resources */,
 				2514C27B10084DCA00A42282 /* Shader.fsh in Resources */,
@@ -322,6 +333,7 @@
 				4D1C683C130CACDB0057A181 /* PVRTQuaternionF.cpp in Sources */,
 				4DFB0BCB13119FD30039F3ED /* vmdMotonProviderIK.mm in Sources */,
 				4D9D026613150477006D8626 /* PickerViewController.m in Sources */,
+				4DAE8ED2132497E8004FE496 /* vmdMotonProviderSkinAnimation.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

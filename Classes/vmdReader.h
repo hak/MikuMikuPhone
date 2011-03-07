@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+//#define DUMP_SKIN_MOTION (1)
+
 #pragma pack(1)
 //Should be 111 bytes in size
 struct vmd_motion

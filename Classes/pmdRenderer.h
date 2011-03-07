@@ -19,6 +19,14 @@
 #import "Texture2D.h"
 
 const int32_t MATRIX_UNDEFINED = -1;
+const int32_t NUM_SHADERS = 4;
+
+enum SHADER_INDEX {
+	SHADER_NOTEXTURE = 0,
+	SHADER_TEXTURE = 1,
+	SHADER_SKIN = 2,
+	SHADER_SKIN_TEXTURE = 3,
+};
 
 struct renderer_vertex
 {
@@ -28,8 +36,14 @@ struct renderer_vertex
 	uint8_t bone[4];
 };
 
+struct skinanimation_vertex
+{
+	float pos[3];
+};
+
 struct DRAW_LIST
 {
+	bool	bSkinMesh;
 	int32_t iMaterialIndex;
 	int32_t iNumIndices;
 	std::vector< int32_t > vecMatrixPalette;
@@ -45,19 +59,27 @@ struct SHADER_PARAMS
 	
 	GLuint _uiMatrixPalette;
 	GLuint _uiMatrixP;
+
+	GLuint _uiSkinWeight;
 };
 
 class pmdRenderer
 {
 	vmdMotionProvider* _motionProvider;
 
-	SHADER_PARAMS _shaders[ 2 ];
+	SHADER_PARAMS _shaders[ NUM_SHADERS ];
 
 	PVRTMat4 _mProjection;
 	PVRTMat4 _mView;
 
 	GLuint _vboRender;
 	GLuint _vboIndex;
+
+	GLuint _vboSkinAnimation;
+	int32_t _iNumSkinAnimations;
+	int32_t _iCurrentSkinAnimationIndex;
+	int32_t _iSizeSkinanimatinVertices;
+	std::vector< skinanimation_vertex* > _vecSkinAnimation;
 
 	std::vector< DRAW_LIST > _vecDrawList;
 	std::vector< mmd_material > _vecMaterials;
@@ -79,8 +101,10 @@ class pmdRenderer
 	std::vector< renderer_vertex > _vecMappedVertex;
 	std::map< int32_t, std::map< int32_t, int32_t> > _mapVertexMapping;
 	
-	int32_t getMappedVertices( mmd_vertex* pVertex, const int32_t iVertexIndex, const uint32_t iVertexKey );
+	int32_t getMappedVertices( mmd_vertex* pVertex, const int32_t iVertexIndex, const uint32_t iVertexKey, const bool bSkining );
 	int16_t getMappedBone( std::vector< int32_t >* pVec, const int32_t iBone );
+
+	bool _bPerformSkinmeshAnimation;
 public:
 	pmdRenderer();
 	~pmdRenderer();
