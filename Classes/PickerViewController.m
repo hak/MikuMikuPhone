@@ -28,9 +28,11 @@
 	MikuMikuPhoneAppDelegate* delegate = (MikuMikuPhoneAppDelegate*)[UIApplication sharedApplication].delegate;
 
     [super viewDidLoad];
-	[pickerView selectRow:[delegate getSelection]
-			  inComponent:0
-				 animated:false];
+    int32_t iSelection = [delegate getSelection];
+    if( iSelection >= 0 )
+        [pickerView selectRow:[delegate getSelection]
+                  inComponent:0
+                     animated:false];
 }
 
 

@@ -85,7 +85,8 @@ int32_t pmdReader::getInteger()
 
 float pmdReader::getFloat()
 {
-	float f =  *(float*)&_pData[ _iOffset ];
+	float f;
+    memcpy(&f, &_pData[ _iOffset ], sizeof(float));
 	_iOffset += sizeof( float );
 	return f;
 }

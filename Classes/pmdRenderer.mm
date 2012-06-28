@@ -299,7 +299,7 @@ bool pmdRenderer::init( pmdReader* reader, vmdReader* motion )
 			if (!validateProgram(_shaders[ i ]._program))
 			{
 				NSLog(@"Failed to validate program: %d", _shaders[ i ]._program);
-				return false;
+//				return false;
 			}
 #endif
 		}		
@@ -1075,7 +1075,7 @@ BOOL pmdRenderer::compileShader( GLuint *shader, const GLenum type, const NSStri
     GLint status;
     const GLchar *source;
 	
-    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
+    source = (GLchar *)[[NSString stringWithContentsOfFile:(NSString *)file encoding:NSUTF8StringEncoding error:nil] UTF8String];
     if (!source)
     {
         NSLog(@"Failed to load vertex shader");

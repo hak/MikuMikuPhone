@@ -31,9 +31,9 @@ uniform highp mat4		uMatrixPalette[116];
 
 uniform highp vec3		vLight0;
 
-uniform highp vec4		vMaterialDiffuse;
-uniform highp vec3		vMaterialAmbient;
-uniform highp vec4		vMaterialSpecular;
+uniform lowp vec4		vMaterialDiffuse;
+uniform lowp vec3		vMaterialAmbient;
+uniform lowp vec4		vMaterialSpecular;
 
 uniform highp float		fSkinWeight;
 

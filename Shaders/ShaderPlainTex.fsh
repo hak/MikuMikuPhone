@@ -9,8 +9,8 @@
 #define USE_PHONG (1)
 
 uniform sampler2D sTexture;
-uniform highp vec3		vMaterialAmbient;
-uniform highp vec4		vMaterialSpecular;
+uniform lowp vec3		vMaterialAmbient;
+uniform lowp vec4		vMaterialSpecular;
 
 varying lowp vec4 colorDiffuse;
 varying highp vec2	texCoord;
