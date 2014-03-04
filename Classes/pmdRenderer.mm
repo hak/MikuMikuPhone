@@ -401,7 +401,19 @@ void pmdRenderer::loadMaterials( pmdReader* pReader )
 			NSString* doc = [paths objectAtIndex:0];
 			
 			NSString* str = [NSString stringWithFormat:@"%@/%@", doc, strFile];
-			NSLog( @"Texture:%@", str);
+            NSRange range;
+            range = [str rangeOfString:@"*"];
+            if( range.location != LONG_MAX)
+            {
+                str = [str substringToIndex:range.location];
+            }
+            range = [str rangeOfString:@"+"];
+            if( range.location != LONG_MAX)
+            {
+                str = [str substringToIndex:range.location];
+            }
+			
+            NSLog( @"Texture:%@", str);
 			
 			mat._tex2D = [[Texture2D alloc] initWithImage: [UIImage imageWithContentsOfFile:str]];
 			mat._tex = mat._tex2D.name;

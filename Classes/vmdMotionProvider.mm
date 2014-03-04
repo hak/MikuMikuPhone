@@ -426,7 +426,7 @@ bool vmdMotionProvider::bind( pmdReader* reader, vmdReader* motion )
 	
 	for( int32_t i = 0; i < iNumFrameData; ++i )
 	{
-		NSData* strBoneName = [NSString stringWithCString:vmdMotion[ i ].BoneName encoding:NSShiftJISStringEncoding];
+		NSString* strBoneName = [NSString stringWithCString:vmdMotion[ i ].BoneName encoding:NSShiftJISStringEncoding];
 		if( strBoneName )
 		{
 			NSNumber* numIndex = [_dicBones objectForKey:strBoneName ];

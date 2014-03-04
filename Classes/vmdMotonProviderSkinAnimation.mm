@@ -19,6 +19,8 @@ void vmdMotionProvider::updateSkinAnimation()
 	//
 	//1. get current motion
 	//
+    if( _vecSkinAnimations.size() == 0 )
+        return;
 	skin_item* pCurrentItem = &_vecSkinAnimations[_iCurrentSkinAnimationIndex];
 	skin_item* pNextItem = &_vecSkinAnimations[_iCurrentSkinAnimationIndex + 1];
 	

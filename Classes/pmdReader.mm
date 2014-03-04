@@ -230,11 +230,11 @@ bool pmdReader::verifyHeader()
 	if( fVersion != PMD_VERSION )
 		return false;
 	
-	NSData* strModelName = [NSString stringWithCString:(const char*)&_pData[ _iOffset ] encoding:NSShiftJISStringEncoding];
+	NSString* strModelName = [NSString stringWithCString:(const char*)&_pData[ _iOffset ] encoding:NSShiftJISStringEncoding];
 	NSLog( @"ModelName:%@", strModelName );
 	_iOffset += PMD_MODELNAME_SIZE;
 
-	NSData* strComment = [NSString stringWithCString:(const char*)&_pData[ _iOffset] encoding:NSShiftJISStringEncoding];
+	NSString* strComment = [NSString stringWithCString:(const char*)&_pData[ _iOffset] encoding:NSShiftJISStringEncoding];
 	NSLog( @"Comment:%@", strComment );
 	_iOffset += PMD_COMMENT_SIZE;
 	
